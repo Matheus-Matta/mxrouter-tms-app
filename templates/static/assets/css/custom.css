@@ -8,3 +8,6 @@
 .dark .shadow-dark-inner {
   box-shadow: inset 0 2px 8px rgba(0, 0, 0, 1);
 }
+.leaflet-popup-content-wrapper{
+  background-color: var(--tw-card-background-color) !important;
+}

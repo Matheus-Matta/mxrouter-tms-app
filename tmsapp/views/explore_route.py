@@ -45,6 +45,7 @@ def explore_route(request, composition_id):
                 'lat': float(rd.delivery.latitude) if rd.delivery.latitude is not None else None,
                 'long': float(rd.delivery.longitude) if rd.delivery.longitude is not None else None,
                 'id': rd.delivery.id,
+                'is_check': 1 if rd.delivery.is_check else 0
             })
 
         routes_data.append({

@@ -85,6 +85,7 @@ def create_routes_task(self, user_id, sp_router, temp_file_path):
                     neighborhood,
                     city,
                     state,
+                    postal_code,
                     "Brasil"
                 ]
 

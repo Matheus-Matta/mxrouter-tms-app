@@ -20,6 +20,7 @@ class Delivery(models.Model):
     reference = models.CharField("Ponto de Referência", max_length=255, null=True, blank=True)
     address = models.CharField("Endereço", max_length=255, null=True, blank=True)
     postal_code = models.CharField("CEP", max_length=20, null=True, blank=True)
+    is_check = models.BooleanField("Marcado no Mapa", null=True, blank=True, default=False)
 
 
     created_at = models.DateTimeField("Data de Cadastro", auto_now_add=True)
