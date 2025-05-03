@@ -1,0 +1,95 @@
+{% load static %}
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="robots" content="follow, index" />
+<meta name="description" content="" />
+<meta name="twitter:site" content="@keenthemes" />
+<meta name="twitter:creator" content="@keenthemes" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Metronic - Tailwind CSS" />
+<meta name="twitter:description" content="" />
+<meta name="twitter:image" content="{% static 'assets/media/app/og-image.png' %}" />
+<meta property="og:url" content="https://127.0.0.1:8001/metronic-tailwind-html/demo3/index.html" />
+<meta property="og:locale" content="en_US" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="@keenthemes" />
+<meta property="og:title" content="Metronic - Tailwind CSS" />
+<meta property="og:description" content="" />
+<meta property="og:image" content="{% static 'assets/media/app/og-image.png' %}" />
+
+<link rel="canonical" href="https://127.0.0.1:8001/metronic-tailwind-html/demo3/index.html" />
+<link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/media/app/apple-touch-icon.png' %}" />
+<link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/media/app/favicon-32x32.png' %}" />
+<link rel="icon" type="image/png" sizes="16x16" href="{% static 'assets/media/app/favicon-16x16.png' %}" />
+<link rel="shortcut icon" href="{% static 'assets/media/app/favicon.ico' %}" />
+
+<!-- jQuery (deve vir primeiro!) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<link href="{% static 'assets/vendors/apexcharts/apexcharts.css' %}" rel="stylesheet" />
+<link href="{% static 'assets/vendors/keenicons/styles.bundle.css' %}" rel="stylesheet" />
+<link href="{% static 'assets/css/styles.css' %}" rel="stylesheet" />
+
+
+
+<!-- Flatpickr -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+<link href="{% static 'assets/css/custom.css' %}" rel="stylesheet" />
+
+<!-- Font Awesome (requerido para ícones) -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="{% static 'assets/css/leaflet.awesome-markers.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css" />
+
+
+
+
+<!-- Theme Mode -->
+<script>
+    const defaultThemeMode = 'light'; // light|dark|system
+    let themeMode;
+
+    if (document.documentElement) {
+        if (localStorage.getItem('theme')) {
+            themeMode = localStorage.getItem('theme');
+        } else if (document.documentElement.hasAttribute('data-theme-mode')) {
+            themeMode = document.documentElement.getAttribute('data-theme-mode');
+        } else {
+            themeMode = defaultThemeMode;
+        }
+
+        if (themeMode === 'system') {
+            themeMode = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        document.documentElement.classList.add(themeMode);
+        function applyTheme(theme) {
+            // Se quiser atualizar dinamicamente o tema do flatpickr:
+            const existing = document.querySelector('#flatpickr-theme');
+            if (existing) existing.remove();
+
+            const themeLink = document.createElement('link');
+            themeLink.id = 'flatpickr-theme';
+            themeLink.rel = 'stylesheet';
+            themeLink.href = theme === 'dark'
+                ? 'https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css'
+                : 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css'; // Ou light.css se você tiver
+            document.head.appendChild(themeLink);
+        }
+
+        applyTheme(themeMode);
+
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelector('input[data-theme-state]').addEventListener('click', function () {
+                const currentTheme = localStorage.getItem('theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                console.log(newTheme);
+                applyTheme(newTheme);
+            })
+        });
+
+    }
+</script>

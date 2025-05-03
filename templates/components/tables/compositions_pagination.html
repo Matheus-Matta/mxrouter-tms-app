@@ -1,0 +1,51 @@
+<div class="pagination flex items-center gap-2">
+    {% if compositions.has_previous %}
+        <button class="btn" onclick="loadPage({{ compositions.previous_page_number }})">
+            <i class="ki-outline ki-black-left rtl:transform rtl:rotate-180"></i>
+        </button>
+    {% else %}
+        <button class="btn disabled" disabled>
+            <i class="ki-outline ki-black-left rtl:transform rtl:rotate-180"></i>
+        </button>
+    {% endif %}
+
+    {% if compositions.number > 2 %}
+        <button class="btn" onclick="loadPage(1)">1</button>
+        {% if compositions.number > 3 %}
+            <span class="text-gray-500">...</span>
+        {% endif %}
+    {% endif %}
+
+    {% if compositions.number > 1 %}
+        <button class="btn" onclick="loadPage({{ compositions.number|add:"-1" }})">{{ compositions.number|add:"-1" }}</button>
+    {% endif %}
+
+    <!-- Página atual -->
+    <button class="btn active disabled" disabled>
+        {{ compositions.number }}
+    </button>
+
+    {% if compositions.number < compositions.paginator.num_pages %}
+        <button class="btn" onclick="loadPage({{ compositions.number|add:"1" }})">{{ compositions.number|add:"1" }}</button>
+    {% endif %}
+
+    {% if compositions.number < compositions.paginator.num_pages|add:"-1" %}
+        <span class="text-gray-500">...</span>
+    {% endif %}
+
+    {% if compositions.number < compositions.paginator.num_pages %}
+        <button class="btn" onclick="loadPage({{ compositions.paginator.num_pages }})">
+            {{ compositions.paginator.num_pages }}
+        </button>
+    {% endif %}
+
+    {% if compositions.has_next %}
+        <button class="btn" onclick="loadPage({{ compositions.next_page_number }})">
+            <i class="ki-outline ki-black-right rtl:transform rtl:rotate-180"></i>
+        </button>
+    {% else %}
+        <button class="btn disabled" disabled>
+            <i class="ki-outline ki-black-right rtl:transform rtl:rotate-180"></i>
+        </button>
+    {% endif %}
+</div>

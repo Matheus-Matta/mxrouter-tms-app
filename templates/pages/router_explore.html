@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ request.resolver_match.view_name }}{% endblock %}
+{}
+{% block content %}
+<!-- Navbar -->
+<div class="flex items-stretch lg:fixed z-5 top-[--tw-header-height] start-[--tw-sidebar-width] end-5 h-[--tw-navbar-height] mx-5 lg:mx-0 bg-[--tw-page-bg] dark:bg-[--tw-page-bg-dark]"
+    id="navbar">
+    <div
+        class="rounded-t-xl border border-gray-400 dark:border-gray-200 border-b-gray-300 dark:border-b-gray-200 bg-[--tw-content-bg] dark:bg-[--tw-content-bg-dark] flex items-stretch grow">
+        <div class="container-fluid flex justify-between items-stretch gap-5">
+            <div class="grid items-stretch">
+                <div class="scrollable-x-auto flex items-stretch">
+                    <div class="menu gap-5 lg:gap-7.5" data-menu="true">
+                        <div class="menu-item" data-menu-item-toggle="dropdown">
+                            <span class="menu-title text-nowrap text-sm text-gray-800 font-medium">
+                                Composição: <span class="text-primary ml-2"> #{{ composition.id }}</span>
+                                <span class="text-sm font-medium text-gray-600 ml-4">
+                                    Criado em: {{ composition.created_at }}
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="relative flex items-center space-x-4">
+                <label for="routeSelect" class="text-sm font-medium text-gray-600">Selecionar Rota:</label>
+                <select style="width: 200px;" id="routeSelect" class="input bg-white dark:bg-[--tw-content-bg-dark] border border-gray-300 rounded-md text-sm p-2">
+                    <option value="all" selected>Todas as Rotas</option>
+                    {% for route in routes_data %}
+                    <option value="{{ route.name }}">{{ route.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End of Navbar -->
+
+<div
+    class="flex grow rounded-b-xl bg-[--tw-content-bg] dark:bg-[--tw-content-bg-dark] border-x border-b border-gray-400 dark:border-gray-200 lg:mt-[--tw-navbar-height] mx-5 lg:ms-[--tw-sidebar-width] mb-5">
+    <div class="flex flex-col grow pt-7 lg:scrollable-y lg:[scrollbar-width:auto] lg:light:[--tw-scrollbar-thumb-color:var(--tw-content-scrollbar-color)] pt-7 lg:[&_.container-fluid]:pe-4"
+        id="scrollable_content">
+        <main class="grow pb-7" role="content">
+            <!-- Container -->
+            <div class="container-fluid">
+                <div class="grid gap-5 lg:gap-7.5"> <!-- Altura mínima relativa ao viewport -->
+                    <div class="grid lg:grid-cols-3 lg:grid-rows-2 h-full gap-5 lg:gap-7.5 items-stretch">
+
+                        <!-- Mapa -->
+                        <div style="height: 360px;" class="lg:col-span-2 row-span-1">
+                            <div class="card h-full flex flex-col">
+                                <div class="card-body flex-1 flex flex-col place-content-center p-2">
+                                    <div class="w-full h-full rounded-xl" id="map"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="height: 750px" class="lg:col-span-1 row-span-2">
+                            <div class="card h-full flex flex-col">
+                                <div class="card-header">
+                                    <h3 class="card-title">Lista de Pedidos</h3>
+                                    {% with total_pedidos=0 %}
+                                        {% for route in routes_data %}
+                                            {% for stop in route.stops %}
+                                                {% if not stop.order_number == "SAIDA" %}
+                                                    {% widthratio total_pedidos|add:1 1 1 as total_pedidos %}
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                    {% endwith %}
+                                </div>
+                                <div class="card-body flex-1 flex flex-col p-2 overflow-y-auto lg:scrollable-y lg:light:[--tw-scrollbar-thumb-color:var(--tw-content-scrollbar-color)]">
+                                    {% for route in routes_data %}
+                                    <h3 data-route="{{ route.name }}" class="pedido-card text-sm font-semibold text-gray-500 mt-2">{{ route.name }}<i class="ki-filled ki-arrow-down ml-3"></i>
+                                    </h3>
+                                    {% for stop in route.stops %}
+                                    {% if not stop.order_number == "SAIDA" %}
+                                    <div 
+                                        style="min-height: 100px;" 
+                                        onmouseover="this.style.boxShadow='0 4px 8px 0 rgba(0, 0, 0, 0.2)';" 
+                                        onmouseout="this.style.boxShadow='0 1px 4px 0 rgba(0, 0, 0, 0.12)';"
+                                        class="pedido-card card bg-gray-100 p-3 mt-2 rounded-xl transition-all duration-300 ease-in-out cursor-pointer"
+                                        data-route="{{ route.name }}"
+                                    >
+                                        <div class="h-full">
+                                            <div class="text-sm  font-bold text-gray-700 w-full flex justify-between">
+                                                <div>
+                                                    Pedido: 
+                                                    <strong class="text-warning">{{ stop.order_number }}</strong>
+                                                </div>
+                                                <strong class="text-primary">#{{ stop.position }}</strong>
+                                            </div>
+                                            <div class="text-sm text-gray-500">
+                                                <strong class="text-gray-600">{{ stop.client }}</strong> : {{ stop.address }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tabela de Rotas -->
+                        <div style="height: 360px;" class="lg:col-span-2 row-span-1">
+                            <div class="card h-full flex flex-col">
+                                <div
+                                    class="card-body flex-1 flex flex-col p-5 ">
+                                    <div class="grid">
+
+                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!-- End of Container -->
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const LIcon = L.Icon.Default;
+        LIcon.mergeOptions({
+            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
+            iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+            shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+        });
+
+        const rotas = {{routes_data| safe}};
+        console.log(rotas);
+
+        const mapa = L.map('map').setView([-22.85, -43.0], 11);
+        // Tile base
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap',
+            detectRetina: true
+        }).addTo(mapa);
+
+        const colors = [
+            { name: "orange", hex: "#e37b0e" },
+            { name: "green", hex: "#0aa344" },
+            { name: "blue", hex: "#0074D9" },
+            { name: "purple", hex: "#4f2c56" },
+            { name: "darkred", hex: "#8f1c1c" },
+            { name: "darkgreen", hex: "#228B22" },
+            { name: "darkblue", hex: "#1f5775" },
+            { name: "cadetblue", hex: "#395b64" },
+            { name: "lightred", hex: "#ff7f50" },
+            { name: "beige", hex: "#ffb88c" },
+            { name: "lightgreen", hex: "#caff70" },
+            { name: "lightblue", hex: "#87cefa" },
+            { name: "darkpurple", hex: "#5d2d5d" },
+            { name: "pink", hex: "#f78fb3" },
+            { name: "gray", hex: "#808080" },
+        ];
+
+        const routeSelect = document.getElementById("routeSelect");
+        const allRouteLayers = []; // Para armazenar todas as polylines e markers
+
+        function limparMapa() {
+            allRouteLayers.forEach(layer => mapa.removeLayer(layer));
+            allRouteLayers.length = 0; // Limpa o array
+        }
+
+        function carregarRotas(nomeSelecionado) {
+            limparMapa();
+
+            rotas.forEach((rt, idx) => {
+                if (nomeSelecionado !== "all" && rt.name !== nomeSelecionado) {
+                    return; // Ignora rotas que não sejam a selecionada
+                }
+
+                const corLinha = colors[idx % colors.length];
+                const rota = typeof rt.geojson === "string" ? JSON.parse(rt.geojson) : rt.geojson;
+                const pontos = rt.stops;
+                if (!rota?.features?.length) return;
+
+                const coordenadasLinha = rota.features[0].geometry.coordinates.map(p => [p[1], p[0]]);
+
+                // Linha da rota
+                const poly = L.polyline(coordenadasLinha, {
+                    color: corLinha.hex,
+                    weight: 5,
+                    opacity: 0.7,
+                    dashArray: '10, 5'
+                }).addTo(mapa);
+                allRouteLayers.push(poly);
+
+                pontos.forEach((p, idx) => {
+                    let icon;
+                    let pos = p.position;
+                    if (p.order_number === "SAIDA") {
+                        icon = L.AwesomeMarkers.icon({
+                            icon: 'home',
+                            markerColor: 'red',
+                            prefix: 'fa',
+                        });
+                    } else {
+                        icon = L.AwesomeMarkers.icon({
+                            icon: ' ',
+                            markerColor: corLinha.name,
+                            prefix: 'fa',
+                            html: `<span class='text-white text-sm'>${pos}</span>`,
+                        });
+                    }
+
+                    if (p.lat && p.long) {
+                        const marker = L.marker([p.lat, p.long], { icon }).addTo(mapa);
+                        marker.bindPopup(`<p class="text-dark my-0 flex justify-between">${rt.name}<strong class="text-primary ml-4" >Ordem #${pos}</strong></p><span class="text-danger">Pedido: ${p.order_number}<br><strong class="text-info">Cliente: ${p.client}</strong></span> <br>${p.address}`);
+                        allRouteLayers.push(marker);
+                    }
+                });
+            });
+        }
+
+        // Quando mudar o select
+        routeSelect.addEventListener("change", function () {
+            const selectedRoute = this.value;
+            carregarRotas(selectedRoute);
+
+            // Atualizar a lista de pedidos
+            document.querySelectorAll(".pedido-card").forEach(card => {
+                if (selectedRoute === "all" || card.dataset.route === selectedRoute) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        });
+
+        // Carrega inicialmente todas
+        carregarRotas("all");
+
+    });
+</script>
+{% endblock %}

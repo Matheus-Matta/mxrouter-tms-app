@@ -1,0 +1,335 @@
+{% extends "base.html" %} {% load static %}
+
+{% block title %}{{ request.resolver_match.view_name }}{% endblock %}
+{% block content %}
+<!-- Navbar -->
+<div class="flex items-stretch lg:fixed z-5 top-[--tw-header-height] start-[--tw-sidebar-width] end-5 h-[--tw-navbar-height] mx-5 lg:mx-0 bg-[--tw-page-bg] dark:bg-[--tw-page-bg-dark]"
+    id="navbar">
+    <div
+        class="rounded-t-xl border border-gray-400 dark:border-gray-200 border-b-gray-300 dark:border-b-gray-200 bg-[--tw-content-bg] dark:bg-[--tw-content-bg-dark] flex items-stretch grow">
+        <!-- Container -->
+        <div class="container-fluid flex justify-between items-stretch gap-5">
+            <div class="grid items-stretch">
+                <div class="scrollable-x-auto flex items-stretch">
+                    <div class="menu gap-5 lg:gap-7.5" data-menu="true">
+                        <div class="menu-item border-b-2 border-b-transparent menu-item-active:border-b-gray-900 menu-item-here:border-b-gray-900"
+                            data-menu-item-placement="bottom-start" data-menu-item-placement-rtl="bottom-end"
+                            data-menu-item-toggle="dropdown" data-menu-item-trigger="click|lg:hover">
+                            <a href="{% url 'tmsapp:route' %}"
+                                class="menu-link {% if '/tms/route/' in request.path %}text-primary border-b-2 border-primary{% endif %}"
+                                tabindex="0">
+                                <span id="currentMenuTitle"
+                                    class="menu-title text-nowrap text-sm text-gray-800 menu-item-active:text-gray-900 menu-item-active:font-medium menu-item-here:text-gray-900 menu-item-here:font-medium menu-item-show:text-gray-900 menu-link-hover:text-gray-900">
+                                </span>
+                                Rotas
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End of Container -->
+    </div>
+</div>
+<!-- End of Navbar -->
+<div
+    class="flex grow rounded-b-xl bg-[--tw-content-bg] dark:bg-[--tw-content-bg-dark] border-x border-b border-gray-400 dark:border-gray-200 lg:mt-[--tw-navbar-height] mx-5 lg:ms-[--tw-sidebar-width] mb-5">
+    <div class="flex flex-col grow lg:scrollable-y lg:[scrollbar-width:auto] lg:light:[--tw-scrollbar-thumb-color:var(--tw-content-scrollbar-color)] pt-7 lg:[&_.container-fluid]:pe-4"
+        id="scrollable_content">
+        <main class="grow pb-7" role="content">
+            <!-- Container -->
+            <div class="container-fluid">
+                <div class="grid gap-5 lg:gap-7.5">
+                    <!-- begin: grid -->
+                    <div class="grid lg:grid-cols-3 gap-5 lg:gap-7.5 items-stretch">
+                        <div class="lg:col-span-2">
+                            <div class="card h-full">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        Gerencie seus dados
+                                    </h3>
+                                </div>
+                                <form method="post" action="{% url 'tmsapp:create_routes' %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="flex p-5 align-center">
+                                        <div style="min-width: 400px;">
+                                            <div class="card-group flex flex-col py-4 gap-2.5">
+                                                <h4 class="card-title mb-2">
+                                                    Modo de Geração
+                                                </h4>
+                                                <div class="flex items-center justify-between">
+                                                    <div class="flex flex-col justify-center gap-1.5">
+                                                        <span class="leading-none font-medium text-sm text-gray-800">
+                                                            Rota Única
+                                                        </span>
+                                                        <span class="text-2sm text-gray-700">
+                                                            Cria uma unica rota para todas as entregas
+                                                        </span>
+                                                    </div>
+                                                    <input class="radio" value="unique" name="sp_router" type="radio" />
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <div class="flex flex-col justify-center gap-1.5">
+                                                        <span class="leading-none font-medium text-sm text-gray-800">
+                                                            Rotas por Cidade
+                                                        </span>
+                                                        <span class="text-2sm text-gray-700">
+                                                            Agrupa automaticamente entregas por município.
+                                                        </span>
+                                                    </div>
+                                                    <input class="radio" value="city" name="sp_router" type="radio" checked />
+                                                </div>
+                                            </div>
+                                            <div class="card-group flex items-center justify-between py-4 gap-2.5">
+                                                <div class="flex flex-col justify-center gap-1.5">
+                                                    <span class="leading-none font-medium text-sm text-gray-900">
+                                                        Prioridade de Entrega
+                                                    </span>
+                                                    <span class="text-2sm text-gray-700">
+                                                        Permite priorizar entregas mais críticas
+                                                    </span>
+                                                </div>
+                                                <div class="switch switch-sm">
+                                                    <input name="priority_router" type="checkbox" checked />
+                                                </div>
+                                            </div>
+                                            <div class="card-group py-4 gap-2.5">
+                                                <div class="flex items-center justify-between">
+                                                    <div class="flex flex-col justify-center gap-1.5">
+                                                        <span class="leading-none font-medium text-sm text-gray-900">
+                                                            Importar
+                                                        </span>
+                                                        <span class="text-2sm text-gray-700">
+                                                            Importar as planilhas de entregas
+                                                        </span>
+                                                    </div>
+                                                    <div class="flex items-center gap-2">
+                                                        <input name="upload_file" style="width: 1px; height: 1px;" required id="upload_file" type="file" class="opacity-0"
+                                                            onchange="handleFileSelect(event)" accept=".xlsx,.xls,.csv">
+                                                        <button type="button" class="btn btn-dark btn-light"
+                                                            onclick="document.getElementById('upload_file').click()">
+                                                            <i class="ki-filled ki-file-up"></i> importar
+                                                        </button>
+                                                        <script>
+                                                            function handleFileSelect(event) {
+                                                                const fileInput = event.target;
+                                                                const fileNameSpan = document.getElementById('file-name');
+
+                                                                if (fileInput.files.length > 0) {
+                                                                    fileNameSpan.textContent = fileInput.files[0].name;
+                                                                    fileNameSpan.classList.remove('hidden');
+                                                                } else {
+                                                                    fileNameSpan.textContent = '';
+                                                                    fileNameSpan.classList.add('hidden');
+                                                                }
+                                                            }
+                                                        </script>
+                                                    </div>
+                                                </div>
+                                                <span id="file-name" class="text-sm text-blue-500 hidden mt-2 "></span>
+                                            </div>
+                                        </div>
+                                        <div class="w-full">
+                                            <div class="flex justify-center">
+                                                <img alt="image" class="dark:hidden max-h-[180px]"
+                                                    src="{% static 'assets/media/illustrations/18.svg' %}" />
+                                                <img alt="image" class="light:hidden max-h-[180px]"
+                                                    src="{% static 'assets/media/illustrations/18-dark.svg' %}" />
+                                            </div>
+                                            <div class="flex flex-col gap-4">
+                                                <div class="flex flex-col gap-3 text-center">
+                                                    <h2 class="text-1.5xl font-semibold text-gray-900">
+                                                        Criação Ágil de Rotas
+                                                    </h2>
+                                                    <p class="text-sm font-medium text-gray-700">
+                                                        Facilite a formação e gestão de rotas com ferramentas intuitivas
+                                                        para comunicação,
+                                                        <br />
+                                                        organização de paradas e acompanhamento de entregas, tudo em um
+                                                        só
+                                                        lugar.
+                                                    </p>
+                                                </div>
+                                                <div class="flex justify-center">
+                                                    <button type="submit" class="btn btn-dark">
+                                                        Criar Rota
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+
+                        </div>
+                        <div class="lg:col-span-1">
+                            <div class="card h-full">
+                              <div class="card-header">
+                                <h3 class="card-title">
+                                  Lista de Motoristas
+                                </h3>
+                              </div>
+                              <div class="card-body flex flex-col gap-5">
+                                <div class="text-sm text-gray-800">
+                                  Gerencie os motoristas disponíveis para suas entregas.
+                                </div>
+                                <div class="input">
+                                    <i class="ki-filled ki-magnifier">
+                                    </i>
+                                    <input placeholder="Procurar motoristas" type="text">
+                                </div>
+                                <div style="height: 200px;" class="flex flex-col scrollable-x-auto scrollable-y divide-y-2  divide-gray-200">
+                                  <!-- Motorista -->
+                                  <div class="cursor-pointer flex items-center hover:bg-gray-100 justify-between gap-2.5 py-2">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="size-10 rounded-full inline-flex items-center justify-center font-semibold border border-primary-clarity bg-primary-light text-primary">
+                                                ES
+                                        </div>
+                                      <div class="flex flex-col gap-0.5">
+                                        <span class="leading-none font-medium text-sm text-gray-900">
+                                          Esther Howard
+                                        </span>
+                                        <span class="text-2sm text-gray-700">
+                                          6 entregas
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <span class="ml-2 text-xs badge-danger badge-outline py-1 px-2 rounded-xl">Fechado</span>
+                                  </div>
+                          
+                                  <!-- Motorista -->
+                                  <div class="cursor-pointer flex items-center hover:bg-gray-100 justify-between gap-2.5 py-2">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="size-10 rounded-full inline-flex items-center justify-center font-semibold border border-primary-clarity bg-primary-light text-primary">
+                                        TH
+                                      </div>
+                                      <div class="flex flex-col gap-0.5">
+                                        <span class="leading-none font-medium text-sm text-gray-900">
+                                          Tyler Hero
+                                        </span>
+                                        <span class="text-2sm text-gray-700">
+                                          29 entregas
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <span class="ml-2 text-xs badge-success badge-outline py-1 px-2 rounded-xl">Livre</span>
+                                  </div>
+                          
+                                  <!-- Motorista -->
+                                  <div class=" cursor-pointer hover:bg-gray-100 flex items-center  justify-between gap-2.5 py-2">
+                                    <div class="flex items-center  gap-2.5">
+                                      <div class="size-10 rounded-full inline-flex items-center justify-center font-semibold border border-primary-clarity bg-primary-light text-primary">
+                                        AM
+                                      </div>
+                                      <div class="flex flex-col gap-0.5">
+                                        <span class="leading-none font-medium text-sm text-gray-900">
+                                          Arlene McCoy
+                                        </span>
+                                        <span class="text-2sm text-gray-700">
+                                          34 entregas
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <span class="ml-2 text-xs badge-success badge-outline py-1 px-2 rounded-xl">Livre</span>
+                                  </div>
+                        
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          
+                    </div>
+                    <!-- end: grid -->
+                    <!-- begin: grid -->
+                    <div class="grid lg:grid-cols-3 gap-5 lg:gap-7.5 items-stretch">
+                        <div class="lg:col-span-2">
+                            <div class="grid">
+                                {% include 'components/tables/compositions_table.html' %}
+                            </div>
+                        </div>
+                        <div class="lg:col-span-1">
+                            <div class="card h-full">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        Rotas Ativas
+                                    </h3>
+                                </div>
+                                <div class="card-body flex flex-col gap-5">
+                                    <div class="text-sm text-gray-800">
+                                        Aqui estão as rotas atualmente ativas. Gerencie, edite ou cancele conforme necessário.
+                                    </div>
+                        
+                                    <div class="flex flex-col divide-y-2 divide-gray-200">
+                                        <div class="flex py-2 items-center justify-between gap-2.5 cursor-pointer hover:bg-gray-100">
+                                            <div class="flex items-center gap-2.5">                                          
+                                                <div class="flex flex-col gap-0.5">
+                                                    <span class="flex items-center gap-1.5 leading-none font-medium text-sm text-gray-900">
+                                                        Rota Rio de Janeiro
+                                                    </span>
+                                                    <span class="text-2sm text-gray-700">
+                                                        12 entregas | Última atualização há 1h
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span style="min-width: 90px;" class="badge-outline badge-success text-white text-center px-2 py-1 rounded-full text-xs">
+                                                    24 entregas
+                                                </span>
+                                            </div>
+                                        </div>
+                         
+                                        <div class="flex py-2  items-center justify-between gap-2.5 cursor-pointer hover:bg-gray-100">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="flex flex-col gap-0.5">
+                                                    <span class="flex items-center gap-1.5 leading-none font-medium text-sm text-gray-900">
+                                                        Rota São Gonçalo
+                                                    </span>
+                                                    <span class="text-2sm text-gray-700">
+                                                        8 entregas | Última atualização há 30min
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span style="min-width: 90px;" class="badge-outline text-center badge-success text-white px-2 py-1 rounded-full text-xs">
+                                                    14 entregas
+                                                </span>
+                                            </div>
+                                        </div>
+                        
+                                        <div class="flex py-2  items-center justify-between gap-2.5 cursor-pointer hover:bg-gray-100">
+                                            <div class="flex items-center gap-2.5">
+                                                <div class="flex flex-col gap-0.5">
+                                                    <span class="flex items-center gap-1.5 leading-none font-medium text-sm text-gray-900">
+                                                        Rota Região dos Lagos
+                                                    </span>
+                                                    <span class="text-2sm text-gray-700">
+                                                        15 entregas | Última atualização há 2h
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-2.5">
+                                                <span style="min-width: 90px;" class="badge-outline text-center badge-success text-white px-2 py-1 w-full rounded-full text-xs">
+                                                    22 entregas
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                        
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <!-- end: grid -->
+                </div>
+            </div>
+            <!-- End of Container -->
+        </main>
+    </div>
+</div>
+<!-- End of Main -->
+{% endblock %}
+
+{% block script %}
+
+{% endblock %}

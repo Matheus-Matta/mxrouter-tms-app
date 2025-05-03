@@ -1,0 +1,90 @@
+{% extends "authapp/base.html" %} {% load static %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+
+<div class="flex items-center justify-center grow bg-center bg-no-repeat page-bg">
+    <div class="card max-w-[370px] w-full">
+        <form action="{% url 'authapp:login' %}" method="post" class="card-body flex flex-col gap-5 p-10"
+            id="sign_in_form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ next }}">
+            <div class="text-center mb-2.5">
+                <h3 class="text-lg font-medium text-gray-900 leading-none mb-2.5">
+                    Entrar
+                </h3>
+                <div class="flex items-center justify-center font-medium">
+                    <span class="text-2sm text-gray-700 me-1.5">
+                        Precisa de uma conta?
+                    </span>
+                    <a class="text-2sm link" href="{% url 'authapp:register' %}">
+                        Inscrever-se
+                    </a>
+                </div>
+            </div>
+
+            {% if form.errors %}
+            <div class="text-sm text-danger text-center">
+                Campo obrigatório não preenchido de forma correta!
+            </div>
+            {% endif %}
+            {% if messages %}
+            <div class="text-sm text-danger text-center">
+                {% for message in messages %}
+                {{ message }}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+
+            <div class="flex items-center gap-2">
+                <span class="border-t border-gray-200 w-full">
+                </span>
+                <span class="text-2xs text-gray-500 font-medium uppercase">
+                    Ou
+                </span>
+                <span class="border-t border-gray-200 w-full">
+                </span>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="form-label font-normal text-gray-900">
+                    Usuario
+                </label>
+                <input name="username" type="text" placeholder="Meu usuario" class="input {% if form.username.errors %}border border-danger{% endif %}"
+                    value="{{ form.username.value|default:'' }}">
+            </div>
+            <div class="flex flex-col gap-1">
+                <div class="flex items-center justify-between gap-1">
+                    <label class="form-label font-normal text-gray-900">
+                        Senha
+                    </label>
+                    <a class="text-2sm link shrink-0" href="{% url 'authapp:password_reset' %}">
+                        Esqueceu a senha?
+                    </a>
+                </div>
+                <div class="input {% if form.password.errors %}border border-danger{% endif %}" data-toggle-password="true">
+                    <input name="password" type="password" placeholder="Digite a senha" value="" class="" />
+                    <button class="btn btn-icon" data-toggle-password-trigger="true" type="button">
+                        <i class="ki-filled ki-eye text-gray-500 toggle-password-active:hidden">
+                        </i>
+                        <i class="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block">
+                        </i>
+                    </button>
+                </div>
+            </div>
+            <label class="checkbox-group">
+                <input class="checkbox checkbox-sm" type="checkbox" name="remember_me" value="1" />
+                <span class="checkbox-label">
+                    Lembrar-me
+                </span>
+            </label>
+            <button type="submit" class="btn btn-primary flex justify-center grow">
+                Entrar
+            </button>
+
+        </form>
+    </div>
+</div>
+
+{% endblock %}

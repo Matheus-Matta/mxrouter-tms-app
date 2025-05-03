@@ -1,0 +1,293 @@
+{% extends "base.html" %} {% load static %}
+
+{% block title %}{{ request.resolver_match.view_name }}{% endblock %}
+{% block content %}
+<!-- Navbar -->
+<div class="flex items-stretch lg:fixed z-5 top-[--tw-header-height] start-[--tw-sidebar-width] end-5 h-[--tw-navbar-height] mx-5 lg:mx-0 bg-[--tw-page-bg] dark:bg-[--tw-page-bg-dark]"
+    id="navbar">
+    <div
+        class="rounded-t-xl border border-gray-400 dark:border-gray-200 border-b-gray-300 dark:border-b-gray-200 bg-[--tw-content-bg] dark:bg-[--tw-content-bg-dark] flex items-stretch grow">
+        <!-- Container -->
+        <div class="container-fluid flex justify-between items-stretch gap-5">
+            <div class="grid items-stretch">
+                <div class="scrollable-x-auto flex items-stretch">
+                    <div class="menu gap-5 lg:gap-7.5" data-menu="true">
+                        <div class="menu-item border-b-2 border-b-transparent menu-item-active:border-b-gray-900 menu-item-here:border-b-gray-900"
+                            data-menu-item-placement="bottom-start" data-menu-item-placement-rtl="bottom-end"
+                            data-menu-item-toggle="dropdown" data-menu-item-trigger="click|lg:hover">
+                            <a href="{% url 'homeapp:dashboard' %}"
+                                class="menu-link {% if '/home/dashboard' in request.path %}text-primary border-b-2 border-primary{% endif %}"
+                                tabindex="0">
+                                <span id="currentMenuTitle"
+                                    class="menu-title text-nowrap text-sm text-gray-800 menu-item-active:text-gray-900 menu-item-active:font-medium menu-item-here:text-gray-900 menu-item-here:font-medium menu-item-show:text-gray-900 menu-link-hover:text-gray-900">
+                                </span>
+                                Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="relative flex items-center space-x-4">
+                <label for="rangeDate" class="cursor-pointer flex items-center gap-2">
+                    <i id="calendarIcon" class="ki-filled ki-calendar text-2xl z-10"></i>
+                    <input type="text" id="rangeDate" class="opacity-0 absolute" placeholder="Selecione um período" />
+                </label>
+            </div>
+        </div>
+        <!-- End of Container -->
+    </div>
+</div>
+<!-- End of Navbar -->
+<div
+    class="flex grow rounded-b-xl bg-[--tw-content-bg] dark:bg-[--tw-content-bg-dark] border-x border-b border-gray-400 dark:border-gray-200 lg:mt-[--tw-navbar-height] mx-5 lg:ms-[--tw-sidebar-width] mb-5">
+    <div class="flex flex-col grow lg:scrollable-y lg:[scrollbar-width:auto] lg:light:[--tw-scrollbar-thumb-color:var(--tw-content-scrollbar-color)] pt-7 lg:[&_.container-fluid]:pe-4"
+        id="scrollable_content">
+        <main class="grow pb-7" role="content">
+            <!-- Container -->
+            <div class="container-fluid">
+                <div class="grid gap-5 lg:gap-7.5">
+                    <!-- begin: grid -->
+                    <div class="grid lg:grid-cols-2 gap-5 lg:gap-7.5 items-stretch">
+                        <div class="lg:col-span-2">
+                            <div class="card h-full">
+                                <div class="card-body flex flex-col place-content-center p-2">
+                                    <div style="height: 400px;" class="w-full z-0 rounded-xl " id="map"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end: grid -->
+                    <!-- begin: grid -->
+                    <div class="grid lg:grid-cols-3 gap-5 lg:gap-7.5 items-stretch">
+                        <div class="lg:col-span-2">
+                            <div class="grid">
+                                {% include 'components/tables/compositions_table.html' %}
+                            </div>
+                        </div>
+                        <div class="lg:col-span-1">
+                            <div style="min-height: 420px;" class="card h-full">
+                                <div class="card-header">
+                                    <h3 class="card-title">
+                                        Entregas por Cidade
+                                    </h3>
+                                    <div class="menu" data-menu="true">
+                                        <!-- ... (menu original mantido) -->
+                                    </div>
+                                </div>
+                                <div class="card-body flex flex-col gap-4 p-5 lg:p-7.5 lg:pt-4">
+                                    <div class="flex flex-col gap-0.5">
+                                        <span class="text-sm font-normal text-gray-700">
+                                            Total de Entregas no Mês
+                                        </span>
+                                        <div class="flex items-center gap-2.5">
+                                            <span class="text-3xl font-semibold text-gray-900">
+                                                1.284
+                                            </span>
+                                            <span class="badge badge-outline badge-success badge-sm">
+                                                +5.4%
+                                            </span>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="flex items-center gap-1 mb-1.5">
+                                        <div class="bg-success h-2 w-full max-w-[40%] rounded-sm"></div>
+                                        <div class="bg-primary h-2 w-full max-w-[35%] rounded-sm"></div>
+                                        <div class="bg-info h-2 w-full max-w-[25%] rounded-sm"></div>
+                                    </div>
+                        
+                                    <div class="flex items-center flex-wrap gap-4 mb-1">
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="badge badge-dot size-2 badge-success"></span>
+                                            <span class="text-sm font-normal text-gray-800">
+                                                Rio de Janeiro
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="badge badge-dot size-2 badge-primary"></span>
+                                            <span class="text-sm font-normal text-gray-800">
+                                                Niterói
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="badge badge-dot size-2 badge-info"></span>
+                                            <span class="text-sm font-normal text-gray-800">
+                                                São Gonçalo
+                                            </span>
+                                        </div>
+                                    </div>
+                        
+                                    <div class="border-b border-gray-300"></div>
+                        
+                                    <div class="grid gap-3">
+                                        <div class="flex items-center justify-between flex-wrap gap-2">
+                                            <div style="width: 150px;" class="flex  items-center gap-1.5">
+                                                <i class="ki-filled ki-map text-base text-gray-500"></i>
+                                                <span class="text-sm font-normal text-gray-900">Rio de janeiro</span>
+                                            </div>
+                                            <div class="flex items-center font-medium text-gray-800">
+                                                <span style="width: 100px;" class="lg:text-left  428 flex justify-end align-center">
+                                                    2223
+                                                    <i class="ki-filled ki-delivery-3 mt-1 ml-2"></i>
+                                                </span>
+                                                <span style="width: 60px;" class="lg:text-right text-success text-xs">
+                                                    1.7%
+                                                    <i class="ki-filled ki-arrow-down "></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between flex-wrap gap-2">
+                                            <div style="width: 150px;" class="flex  items-center gap-1.5">
+                                                <i class="ki-filled ki-map text-base text-gray-500"></i>
+                                                <span class="text-sm font-normal text-gray-900">Niterói</span>
+                                            </div>
+                                            <div class="flex items-center font-medium text-gray-800">
+                                                <span style="width: 100px;" class="lg:text-left 428 flex justify-end align-center">
+                                                    223
+                                                    <i class="ki-filled ki-delivery-3 mt-1 ml-2"></i>
+                                                </span>
+                                                <span style="width: 60px;" class="lg:text-right text-danger text-xs">
+                                                    -1.7%
+                                                    <i class="ki-filled ki-arrow-down "></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between flex-wrap gap-2">
+                                            <div style="width: 150px;" class="flex  items-center gap-1.5">
+                                                <i class="ki-filled ki-map text-base text-gray-500"></i>
+                                                <span class="text-sm font-normal text-gray-900">São Gonçalo</span>
+                                            </div>
+                                            <div class="flex items-center font-medium text-gray-800">
+                                                <span style="width: 100px;" class="lg:text-left 428 flex justify-end align-center">
+                                                    2233
+                                                    <i class="ki-filled ki-delivery-3 mt-1 ml-2"></i>
+                                                </span>
+                                                <span style="width: 60px;" class="lg:text-right text-xs text-success">
+                                                    20%
+                                                    <i class="ki-filled ki-arrow-down "></i>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <!-- end: grid -->
+                </div>
+            </div>
+            <!-- End of Container -->
+        </main>
+    </div>
+</div>
+<!-- End of Main -->
+{% endblock %}
+
+{% block script %}
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const path = window.location.pathname; // Ex: "/home/relatorios"
+        const currentMenuTitle = document.getElementById("currentMenuTitle");
+        const menuItems = document.querySelectorAll("#menuDropdown .item-navbar");
+
+        menuItems.forEach((link) => {
+        })
+    });
+</script>
+<script>
+    // Inicializa e salva a instância do Flatpickr
+    const flatpickrInstance = flatpickr("#rangeDate", {
+        locale: "pt", // usando o idioma pt_BR corretamente
+        altInput: true,
+        altFormat: "j \\de F \\de Y",
+        mode: "range",
+        dateFormat: "d-m-Y",
+        defaultDate: [
+            new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0)
+        ]
+    });
+    document.getElementById("calendarIcon").addEventListener("click", function () {
+        flatpickrInstance.open();
+    });
+</script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch("{% url 'tmsapp:get_company_locations' %}")
+            .then(response => response.json())
+            .then(locations => {
+                // Encontra o local principal
+                const principal = locations.find(loc => loc.is_principal && loc.latitude && loc.longitude);
+
+                // Usa o principal como centro, senão um fallback
+                const centerLat = principal?.latitude ?? -22.9068;
+                const centerLon = principal?.longitude ?? -43.1729;
+
+                // Cria o mapa apenas uma vez, centrado no principal
+                const map = L.map('map').setView([centerLat, centerLon], 11);
+
+                // Tile Layer (pode usar outro como CartoDB se quiser)
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '&copy; OpenStreetMap contributors',
+                    maxZoom: 19,
+                }).addTo(map);
+
+                // Ícones personalizados por tipo
+                const iconTypes = {
+                    warehouse: { icon: 'home', markerColor: 'red' },
+                    store: { icon: 'store', markerColor: 'darkblue' },
+                    distribution_center: { icon: 'fa-truck', markerColor: 'orange' },
+                    hub: { icon: 'fa-share-alt', markerColor: 'blue' },
+                    other: { icon: 'fa-map-marker-alt', markerColor: 'gray' },
+                };
+               // camada para armazenar os desenhos
+            const drawnItems = new L.FeatureGroup();
+            map.addLayer(drawnItems);
+
+            // controle de desenho
+            const drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems
+            },
+            draw: {
+                polygon: true,
+                polyline: false,
+                rectangle: false,
+                circle: false,
+                marker: false,
+                circlemarker: false
+            }
+            });
+            map.addControl(drawControl);
+
+            // evento: captura os pontos desenhados
+            map.on(L.Draw.Event.CREATED, function (e) {
+            const layer = e.layer;
+            drawnItems.addLayer(layer);
+
+            const geojson = layer.toGeoJSON();
+            const coordinates = geojson.geometry.coordinates;
+
+            console.log('Área desenhada (coordenadas):', JSON.stringify(coordinates));
+
+            // aqui você pode enviar para o servidor via fetch/ajax ou salvar localmente
+            });
+
+                locations.forEach(loc => {
+                    if (loc.latitude && loc.longitude) {
+                        const config = iconTypes[loc.type] || iconTypes.other;
+
+                        const icon = L.AwesomeMarkers.icon({
+                            icon: config.icon,
+                            markerColor: config.markerColor,
+                            prefix: 'fa',
+                        });
+
+                        const marker = L.marker([loc.latitude, loc.longitude], { icon }).addTo(map);
+                        marker.bindPopup(`<strong class="text-gray-900">${loc.name}</strong>`);
+                    }
+                });
+            });
+    });
+</script>
+{% endblock %}

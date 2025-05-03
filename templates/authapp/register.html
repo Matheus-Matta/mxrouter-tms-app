@@ -1,0 +1,163 @@
+{% extends "authapp/base.html" %} {% load static %}
+
+{% block title %}Registro{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'css/authapp.css' %}">
+
+<div class="flex items-center justify-center grow bg-center bg-no-repeat page-bg">
+    <div class="card max-w-[370px] w-full">
+        <form action="{% url 'authapp:register' %}" class="card-body flex flex-col gap-5 p-10" id="sign_up_form"
+            method="post">
+            {% csrf_token %}
+            <div class="text-center mb-2.5">
+                <h3 class="text-lg font-medium text-gray-900 leading-none mb-2.5">
+                    Inscrever-se
+                </h3>
+                <div class="flex items-center justify-center">
+                    <span class="text-2sm text-gray-700 me-1.5">
+                        Já tem uma conta?
+                    </span>
+                    <a class="text-2sm link" href="{% url 'authapp:login' %}">
+                        Entrar
+                    </a>
+                </div>
+            </div>
+            {% if messages %}
+            {% for message in messages %}
+            <div class="text-sm text-danger text-center">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            <div class="flex items-center gap-2">
+                <span class="border-t border-gray-200 w-full">
+                </span>
+                <span class="text-2xs text-gray-600 uppercase">
+                    ou
+                </span>
+                <span class="border-t border-gray-200 w-full">
+                </span>
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="form-label text-gray-900">Email</label>
+                <input class="input {% if form.email.errors %}border border-danger{% endif %}" name="email"
+                    placeholder="email@email.com" type="text" value="{{ form.email.value|default:'' }}" />
+                {% for error in form.email.errors %}
+                <p class="text-danger text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="form-label text-gray-900">Usuário</label>
+                <input class="input {% if form.username.errors %}border border-danger{% endif %}" name="username"
+                    placeholder="Seu usuário" type="text" value="{{ form.username.value|default:'' }}" />
+                {% for error in form.username.errors %}
+                <p class="text-danger text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="form-label font-normal text-gray-900">Senha</label>
+                <div class="input {% if form.password.errors %}border border-danger{% endif %}"
+                    data-toggle-password="true">
+                    <input id="password-input" name="password" placeholder="Digite a senha" type="password" value="">
+                    <button class="btn btn-icon" data-toggle-password-trigger="true" type="button">
+                        <i class="ki-filled ki-eye text-gray-500 toggle-password-active:hidden"></i>
+                        <i class="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block"></i>
+                    </button>
+                </div>
+                <div class="w-full h-2 bg-gray-200 rounded mt-2">
+                    <div id="password-strength-bar" class="h-full rounded transition-all duration-300"></div>
+                </div>
+                {% if form.password.errors %}
+                    {% for error in form.password.errors %}
+                    <p class="text-danger text-xs mt-1">{{ error }}</p>
+                    {% endfor %}
+                {% else %}
+                    <p id="password-strength-text" class="text-gray-500 text-xs mt-1">Sua senha deve conter pelo menos 8 caracteres, um número e uma letra maiúscula.</p>
+                {% endif %}
+            </div>
+            <div class="flex flex-col gap-1">
+                <label class="form-label font-normal text-gray-900">Confirmar Senha</label>
+                <div class="input {% if form.confirm_password.errors %}border border-danger{% endif %}"
+                    data-toggle-password="true">
+                    <input name="confirm_password" placeholder="Digite a senha novamente" type="password" value="" />
+                    <button class="btn btn-icon" data-toggle-password-trigger="true" type="button">
+                        <i class="ki-filled ki-eye text-gray-500 toggle-password-active:hidden"></i>
+                        <i class="ki-filled ki-eye-slash text-gray-500 hidden toggle-password-active:block"></i>
+                    </button>
+                </div>
+                {% for error in form.confirm_password.errors %}
+                <p class="text-danger text-xs mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+
+            <label class="checkbox-group">
+                <input class="checkbox checkbox-sm" name="check" type="checkbox" value="1" required />
+                <span class="checkbox-label">
+                    Eu aceito
+                    <a class="text-2sm link" href="#">
+                        Termos e Condições
+                    </a>
+                </span>
+            </label>
+            <button class="btn btn-primary flex justify-center grow">
+                Inscrever-se
+            </button>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+<script>
+    const passwordInput = document.getElementById('password-input');
+    const strengthBar = document.getElementById('password-strength-bar');
+    const strengthText = document.getElementById('password-strength-text');
+    strengthText.setAttribute('data-old-class', strengthText.className);
+
+    passwordInput.addEventListener('input', () => {
+        const value = passwordInput.value;
+        let strength = 0;
+
+        if (value.length >= 8) strength++;
+        if (/[A-Z]/.test(value)) strength++;
+        if (/[a-z]/.test(value)) strength++;
+        if (/\d/.test(value)) strength++;
+        if (/[\W_]/.test(value)) strength++;
+
+        const colors = [
+            'bg-red-500',     // Muito fraca
+            'bg-yellow-400',  // Fraca
+            'bg-blue-400',    // Razoável
+            'bg-indigo-500',  // Forte
+            'bg-green-500'    // Muito forte
+        ];
+
+        const textColors = [
+            'text-red-500',
+            'text-yellow-500',
+            'text-blue-500',
+            'text-indigo-500',
+            'text-green-500'
+        ];
+
+        const levels = ['Muito fraca', 'Fraca', 'Razoável', 'Forte', 'Muito forte'];
+
+        // Reset classes
+        strengthBar.className = 'h-full rounded transition-all duration-300';
+        strengthBar.classList.add(colors[strength - 1] || 'bg-gray-200');
+        strengthBar.style.width = `${(strength / 5) * 100}%`;
+
+        if (strength === 0) {
+            strengthText.textContent = strengthText.getAttribute('data-old-text') || '';
+            strengthText.className = strengthText.getAttribute('data-old-class') || '';
+            return;
+        }
+
+        strengthText.setAttribute('data-old-text', strengthText.textContent);
+        strengthText.textContent = levels[strength - 1];
+        strengthText.className = 'text-xs mt-1 ' + (textColors[strength - 1] || 'text-gray-500');
+    });
+</script>
+{% endblock %}

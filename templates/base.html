@@ -1,0 +1,77 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR" dir="ltr" data-theme="true" data-theme-mode="light" class="h-full">
+
+<head>
+    {% include 'partials/head.html' %}
+    <title>Mx Router - {% block title %}Home{% endblock %}</title>
+    {% block css %}{% endblock %}
+    <style>
+        @keyframes slide-in-right {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-slide-in-right {
+            animation: slide-in-right 0.3s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body
+    class="antialiased flex h-full text-base text-gray-700 [--tw-page-bg:#f6f6f6] [--tw-page-bg-dark:var(--tw-coal-200)] [--tw-content-bg:var(--tw-light)] [--tw-content-bg-dark:var(--tw-coal-500)] [--tw-content-scrollbar-color:#e8e8e8] [--tw-header-height:58px] [--tw-sidebar-width:58px] [--tw-navbar-height:56px] bg-[--tw-page-bg] dark:bg-[--tw-page-bg-dark] lg:overflow-hidden">
+
+
+
+    <div class="flex grow">
+        {% include 'partials/header.html' %}
+        <div class="flex flex-col lg:flex-row grow pt-[--tw-header-height]">
+            {% include 'partials/sidebar.html' %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+
+    <!-- Scripts -->
+    {% include 'partials/script.html' %}
+    <!-- End of Scripts -->
+    {% block script %}{% endblock %}
+    <!-- Toast container -->
+    <div class="fixed top-0 right-0 z-50 space-y-3 p-3">
+        {% for message in messages %}
+        <div class="flex items-center max-w-sm p-3 rounded-lg shadow-lg animate-slide-in-right
+                  text-white 
+                  {% if message.tags == 'success' %}
+                      bg-green-500
+                  {% elif message.tags == 'error' %}
+                      bg-red-500
+                  {% elif message.tags == 'warning' %}
+                      bg-yellow-500 
+                  {% else %}
+                      bg-blue-500
+                  {% endif %}">
+            <button type="button" class="mr-4 ml-auto text-white hover:text-danger"
+                onclick="this.parentElement.remove()">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+            <div class="text-white flex-1 pr-3">
+                {{ message }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</body>
+
+</html

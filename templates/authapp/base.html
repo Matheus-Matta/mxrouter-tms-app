@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr" data-theme="true" data-theme-mode="light" class="h-full">
+
+<head>
+    {% include 'partials/head.html' %}
+    <title>Mx Router - {% block title %}Login{% endblock %}</title>
+    {% block css %}{% endblock %}
+    <style>
+        .page-bg {
+            background-image: url('{% static "assets/media/images/2600x1200/bg-10.png" %}');
+        }
+
+        .dark .page-bg {
+            background-image: url('{% static "assets/media/images/2600x1200/bg-10-dark.png" %}');
+        }
+    </style>
+</head>
+
+<body class="antialiased flex h-full text-base text-gray-700 dark:bg-coal-500">
+
+    {% block content %}{% endblock %}
+
+    <!-- Scripts -->
+    {% include 'partials/script.html' %}
+    <!-- End of Scripts -->
+    {% block script %}{% endblock %}
+
+</body>
+
+</html

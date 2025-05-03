@@ -1,0 +1,47 @@
+{% load static %}
+<div class="fixed w-[--tw-sidebar-width] lg:top-[--tw-header-height] top-0 bottom-0 z-20 lg:flex flex-col items-stretch shrink-0 group py-3 lg:py-0"
+    id="sidebar">
+    <div class="flex grow shrink-0" id="sidebar_content">
+        <div class="scrollable-y-auto grow gap-2.5 shrink-0 flex items-center flex-col" data-scrollable="true"
+            data-scrollable-height="auto" data-scrollable-offset="0px" data-scrollable-wrappers="#sidebar_content">
+
+            <a data-tooltip="" data-tooltip-placement="right" href="{% url 'homeapp:dashboard' %}"
+                class="btn btn-icon btn-icon-lg rounded-full size-10 border border-transparent text-gray-600
+        hover:bg-light hover:text-primary hover:border-gray-300
+        {% if '/home/' in request.path %}[.active&]:bg-light [.active&]:text-primary [.active&]:border-gray-300 active{% endif %}">
+                <span class="menu-icon"><i class="ki-filled ki-home"></i></span>
+                <span class="tooltip">Home</span>
+            </a>
+
+            <a data-tooltip="" data-tooltip-placement="right" href="{% url 'tmsapp:route' %}"
+                class="btn btn-icon btn-icon-lg rounded-full size-10 border border-transparent text-gray-600
+        hover:bg-light hover:text-primary hover:border-gray-300
+        {% if '/route/' in request.path %}[.active&]:bg-light [.active&]:text-primary [.active&]:border-gray-300 active{% endif %}">
+                <span class="menu-icon"><i class="ki-filled ki-geolocation"></i></span>
+                <span class="tooltip">Rotas</span>
+            </a>
+
+            
+            <a data-tooltip="" data-tooltip-placement="right" href=""
+                class="btn btn-icon btn-icon-lg rounded-full size-10 border border-transparent text-gray-600
+        hover:bg-light hover:text-primary hover:border-gray-300
+        {% if '/perfil/' in request.path %}[.active&]:bg-light [.active&]:text-primary [.active&]:border-gray-300 active{% endif %}">
+                <span class="menu-icon"><i class="ki-filled ki-delivery"></i></span>
+                <span class="tooltip">Veiculos</span>
+            </a>
+
+            <a data-tooltip="" data-tooltip-placement="right" href="" class="btn btn-icon btn-icon-lg rounded-full size-10 border border-transparent text-gray-600
+        hover:bg-light hover:text-primary hover:border-gray-300
+        {% if '/conta/' in request.path %}bg-light text-primary border-gray-300{% endif %}">
+                <span class="menu-icon"><i class="ki-filled ki-user-square"></i></span>
+                <span class="tooltip">Motoristas</span>
+            </a>
+            <a data-tooltip="" data-tooltip-placement="right" href="" class="btn btn-icon btn-icon-lg rounded-full size-10 border border-transparent text-gray-600
+            hover:bg-light hover:text-primary hover:border-gray-300
+            {% if '/conta/' in request.path %}bg-light text-primary border-gray-300{% endif %}">
+                <span class="menu-icon"><i class="ki-filled ki-users"></i></span>
+                <span class="tooltip">Membros e Funções</span>
+            </a>
+        </div>
+    </div>
+</div>

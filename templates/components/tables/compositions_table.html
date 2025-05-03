@@ -1,0 +1,178 @@
+<div id="datatable-wrapper" data-url="{% url 'tmsapp:route_compositions_data' %}" style="min-height: 440px;"
+    class="card card-grid h-full min-w-full">
+    <div class="card-header">
+        <h3 class="card-title">
+            Composições
+        </h3>
+        <div class="input input-sm max-w-48">
+            <i class="ki-filled ki-magnifier"></i>
+            <input placeholder="Search Teams" type="text" id="datatable_search"
+                class="form-control form-control-solid" />
+        </div>
+    </div>
+
+    <div class="card-body">
+        <div data-datatable="true" data-datatable-page-size="5">
+            <div id="datatable-compositions" style="max-height: 360px;" class="scrollable-y scrollable-x-auto">
+                <table class="table table-border" data-datatable-table="true">
+                    <thead>
+                        <tr>
+                            <th class="min-w-[60px]" data-datatable-column="id">
+                                <span class="sort">
+                                    <span class="sort-label">ID</span>
+                                    <span class="sort-icon"></span>
+                                </span>
+                            </th>
+                            <th class="min-w-[280px]" data-datatable-column="name">
+                                <span class="sort asc">
+                                    <span class="sort-label">Nome</span>
+                                    <span class="sort-icon"></span>
+                                </span>
+                            </th>
+                            <th class="min-w-[135px]" data-datatable-column="type">
+                                <span class="sort">
+                                    <span class="sort-label">Tipo</span>
+                                    <span class="sort-icon"></span>
+                                </span>
+                            </th>
+                            <th class="min-w-[135px]">
+                                <span>
+                                    <span class="sort-label">Total de entregas</span>
+                                </span>
+                            </th>
+                            <th class="min-w-[135px]">
+                                <span>
+                                    <span class="sort-label">Duração</span>
+                                </span>
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="datatable-body">
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div
+                class="card-footer justify-center md:justify-between flex-col md:flex-row gap-5 text-gray-600 text-2sm font-medium">
+                <div class="flex items-center gap-2">
+                    Mostrar
+                    <select id="datatable_size" class="select select-sm w-16">
+                        <option value="5" selected>5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                    </select>
+                    por página
+                </div>
+
+                <div class="flex items-center gap-4">
+                    <span id="datatable_info"></span>
+                    <div id="datatable-pagination" class="pagination flex gap-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT PARA ATUALIZAR A TABELA -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let currentPage = 1;
+        let pageSize = 5;
+        let currentSearch = '';
+        let currentOrderBy = 'id'; // coluna padrão
+        let currentOrderDir = 'desc'; // ascendente padrão
+
+        function loadPage(page = 1) {
+            currentPage = page;
+            fetchData();
+        }
+
+        function changePageSize(size) {
+            pageSize = size;
+            currentPage = 1;
+            fetchData();
+        }
+
+        function searchCompositions(value) {
+            currentSearch = value;
+            currentPage = 1;
+            fetchData();
+        }
+
+        function fetchData() {
+            const wrapper = document.getElementById('datatable-wrapper');
+            const baseUrl = wrapper.getAttribute('data-url');
+            const url = `${baseUrl}?page=${currentPage}&size=${pageSize}&search=${encodeURIComponent(currentSearch)}&order_by=${currentOrderBy}&order_dir=${currentOrderDir}`;
+
+            wrapper.querySelector('tbody').innerHTML = `
+                <tr>
+                    <td colspan="5" class="text-center py-4 text-gray-500">
+                        {% include 'static/assets/svg/spinner.html' %}
+                        Carregando...
+                    </td>
+                </tr>
+            `;
+
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    wrapper.querySelector('tbody').innerHTML = data.table_html;
+                    wrapper.querySelector('#datatable-pagination').innerHTML = data.pagination_html;
+                    wrapper.querySelector('#datatable_info').innerText = data.info_text;
+                }).catch(error => {
+                    console.error('Erro ao carregar dados:', error);
+                    wrapper.querySelector('tbody').innerHTML = `
+                        <tr>
+                            <td colspan="5" class="text-center py-4 text-red-500">
+                                Erro ao carregar dados.
+                            </td>
+                        </tr>
+                    `;
+                });
+        }
+
+        // Eventos
+        document.getElementById('datatable_size').addEventListener('change', (e) => {
+            changePageSize(e.target.value);
+        });
+        function debounce(func, delay) {
+            let timeoutId;
+            return function (...args) {
+                clearTimeout(timeoutId);
+                timeoutId = setTimeout(() => {
+                    func.apply(this, args);
+                }, delay);
+            };
+        }
+        const searchInput = document.getElementById('datatable_search');
+
+        searchInput.addEventListener('input', debounce((e) => {
+            searchCompositions(e.target.value);
+        }, 300)); // 300ms de delay
+
+        // Adiciona evento de click para ordenar ao clicar nos headers
+        document.querySelectorAll('th[data-datatable-column]').forEach(th => {
+            th.addEventListener('click', function () {
+                const column = this.getAttribute('data-datatable-column');
+
+                if (currentOrderBy === column) {
+                    // Se já está ordenando por essa coluna, inverte o sentido
+                    currentOrderDir = (currentOrderDir === 'asc') ? 'desc' : 'asc';
+                } else {
+                    // Se for outra coluna, ordena ascendente
+                    currentOrderBy = column;
+                    currentOrderDir = 'asc';
+                }
+                console.log(currentOrderBy, column, currentOrderDir);
+                fetchData(); // Atualiza a tabela
+            });
+        });
+        // Primeira carga da tabela
+        fetchData();
+
+        // Expõe a função loadPage para ser usada nos botões
+        window.loadPage = loadPage;
+    })
+</script>

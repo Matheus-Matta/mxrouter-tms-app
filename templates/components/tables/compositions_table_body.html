@@ -1,0 +1,37 @@
+{% for comp in compositions %}
+<tr>
+    <td class="text-center text-x text-blue-400">
+        #{{ comp.id }}
+    </td>
+    <td>
+        <div class="flex flex-col gap-2">
+            <a class="leading-none font-medium text-sm text-gray-900 hover:text-primary" href="{% url 'tmsapp:explore_routes' comp.id %}">
+                {{ comp.name }}
+            </a>
+            <span class="text-2sm text-gray-700 font-normal leading-3">
+                Criado por
+                {% if comp.created_by %}
+                    <a class="hover:text-primary text-blue-200" href="#">
+                        {{ comp.created_by.username }}
+                    </a>
+                {% else %}
+                    <span class="text-gray-400">N/A</span>
+                {% endif %}
+            </span>
+        </div>
+    </td>
+    <td>
+        {{ comp.get_type_display }}
+    </td>
+    <td class="hover:text-primary cursor-pointer">
+        {{ comp.total_deliveries }} Entregas
+    </td>
+    <td class="text-2sm text-gray-700 font-normal leading-3">
+        {{ comp.total_time }}
+    </td>
+</tr>
+{% empty %}
+<tr>
+    <td colspan="5" class="text-center">Nenhuma composição encontrada.</td>
+</tr>
+{% endfor %}
