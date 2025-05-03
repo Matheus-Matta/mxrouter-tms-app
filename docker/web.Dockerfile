@@ -1,16 +1,11 @@
 FROM python:3.11-slim
 
-# Instala dependências mínimas
-RUN apt-get update && apt-get install -y curl gnupg
-
-# Copia o script de instalação local
-COPY ./setup_18.x /tmp/setup_node.sh
-
-# Executa o script para configurar o repositório do Node
-RUN bash /tmp/setup_node.sh && \
-    apt-get install -y nodejs && \
+# Atualiza pacotes e instala Node.js + npm direto do repositório padrão
+RUN apt-get update && \
+    apt-get install -y nodejs npm && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
+# Define diretório de trabalho
 WORKDIR /app
 
 # Instala dependências Python
@@ -20,10 +15,10 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # Copia o restante do código
 COPY . .
 
-# Instala dependências Node (Tailwind etc.)
+# Instala dependências Node (ex: Tailwind)
 RUN npm install && npm run build:prod
 
-# Entrypoint para execução
+# Entrypoint do projeto
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
