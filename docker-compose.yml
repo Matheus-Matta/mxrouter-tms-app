@@ -54,7 +54,7 @@ services:
     image: redis:7-alpine
     container_name: redis_mxrouter
     ports:
-      - "6379:6379"
+      - "6481:6379"
     volumes:
       - redis:/data
     networks:
