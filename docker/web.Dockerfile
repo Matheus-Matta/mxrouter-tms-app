@@ -3,12 +3,13 @@ FROM ubuntu:22.04
 # Evita prompts interativos
 ENV DEBIAN_FRONTEND=noninteractive
 
+RUN apt-get update
+
 # Instala Python + Node.js + dependências
-RUN apt-get update && \
-    apt-get install -y python3.11 python3-pip nodejs npm curl git build-essential && \
+RUN apt-get install -y python3.11 python3-pip nodejs npm curl git build-essential && \
     ln -sf python3.11 /usr/bin/python && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
-
+    
 # Define diretório de trabalho
 WORKDIR /app
 
