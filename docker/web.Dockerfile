@@ -1,10 +1,11 @@
 FROM python:3.11-slim
 
-RUN apt-get update && \
-    apt-get install -y curl build-essential git && \
-    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
-    apt-get install -y nodejs && \
-    apt-get clean
+ENV NODE_VERSION=18.19.1
+
+# Instala curl, extrator e dependências mínimas
+RUN apt-get update && apt-get install -y curl xz-utils && \
+    curl -fsSL https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
