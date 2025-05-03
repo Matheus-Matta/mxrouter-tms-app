@@ -39,7 +39,7 @@ services:
     build:
       context: .
       dockerfile: docker/worker.Dockerfile
-    command: celery -A config worker -l info
+    command: celery -A config worker --loglevel=info --without-gossip --without-mingle --without-heartbeat --max-tasks-per-child=100
     env_file: .env
     volumes:
       - .:/app
