@@ -1,51 +1,54 @@
 version: '3.8'
 
-x-base-service: &base
-  build:
-    context: .
-  env_file: .env
-  volumes:
-    - .:/app
-  networks:
-    - minha_rede
-
 services:
   web:
-    <<: *base
     build:
       context: .
       dockerfile: docker/web.Dockerfile
     command: gunicorn config.wsgi:application --bind 0.0.0.0:8000
+    env_file: .env
+    volumes:
+      - .:/app
     ports:
       - "8581:8000"
     depends_on:
       - redis
     networks:
       - minha_rede
+    dns:
+      - 8.8.8.8
 
   websocket:
-    <<: *base
     build:
       context: .
       dockerfile: docker/websocket.Dockerfile
     command: daphne -b 0.0.0.0 -p 8001 config.asgi:application
+    env_file: .env
+    volumes:
+      - .:/app
     ports:
       - "8582:8001"
     depends_on:
       - redis
     networks:
       - minha_rede
+    dns:
+      - 8.8.8.8
 
   worker:
-    <<: *base
     build:
       context: .
       dockerfile: docker/worker.Dockerfile
     command: celery -A config worker -l info
+    env_file: .env
+    volumes:
+      - .:/app
     depends_on:
       - redis
     networks:
       - minha_rede
+    dns:
+      - 8.8.8.8
 
   redis:
     image: redis:7-alpine
@@ -56,6 +59,8 @@ services:
       - redis:/data
     networks:
       - minha_rede
+    dns:
+      - 8.8.8.8
 
   nginx:
     image: nginx:stable
@@ -69,14 +74,13 @@ services:
       - websocket
     networks:
       - minha_rede
+    dns:
+      - 8.8.8.8
 
 volumes:
   redis:
 
 networks:
   minha_rede:
-    driver: bridge 
+    driver: bridge
     external: true
-
-dns:
-  - 8.8.8.8
