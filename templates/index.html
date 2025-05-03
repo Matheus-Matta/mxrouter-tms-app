@@ -289,5 +289,28 @@
                 });
             });
     });
+    fetch("http://10.0.0.4:8584/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            jobs: [
+            { id: 1, location: [2.2945, 48.8584] }, // Exemplo: Torre Eiffel
+            { id: 2, location: [2.3499, 48.8647] }  // Exemplo: Louvre
+            ],
+            vehicles: [
+            {
+                id: 1,
+                start: [2.3333, 48.8600], // Exemplo: ponto central
+                end: [2.3333, 48.8600]
+            }
+            ]
+        })
+        })
+        .then(response => response.json())
+        .then(data => console.log("Resposta VROOM:", data))
+        .catch(error => console.error("Erro ao chamar VROOM:", error));
+
 </script>
 {% endblock %}

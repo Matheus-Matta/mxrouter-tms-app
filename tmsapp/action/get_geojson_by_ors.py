@@ -27,7 +27,7 @@ def get_geojson_by_ors(coordinates):
     }
 
     # Chamada ao VROOM local
-    vroom_response = requests.post("http://10.0.0.4:8282/", json=payload)
+    vroom_response = requests.post("https://vroom.starseguro.com.br/", json=payload)
 
     if vroom_response.status_code != 200:
         raise Exception(f"Erro VROOM: {vroom_response.status_code} - {vroom_response.text}")
