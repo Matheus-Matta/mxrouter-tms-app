@@ -62,9 +62,6 @@ build/
 
 # Tailwind / Webpack
 public/
-templates/static/assets/css/styles.css
-templates/static/assets/css/*.css
-templates/static/assets/js/*.js
 
 # Compiled CSS/JS from Tailwind or Webpack
 *.map

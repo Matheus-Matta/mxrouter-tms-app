@@ -1,6 +1,4 @@
-FROM python:3.11
-
-RUN apt-get update
+FROM python:3.11-slim
 
 WORKDIR /app
 

@@ -1,0 +1,10 @@
+.dark .flatpickr-day.selected,
+.dark .flatpickr-day.startRange,
+.dark .flatpickr-day.endRange {
+  background-color: var(--tw-primary);
+  color: white;
+  border: none;
+}
+.dark .shadow-dark-inner {
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 1);
+}
