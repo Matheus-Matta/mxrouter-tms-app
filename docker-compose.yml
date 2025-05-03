@@ -82,5 +82,4 @@ volumes:
 
 networks:
   minha_rede:
-    driver: bridge
     external: true
