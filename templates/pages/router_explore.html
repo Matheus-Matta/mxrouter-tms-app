@@ -160,7 +160,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const routeSelect = document.getElementById("routeSelect");
     const allRouteLayers = [];
-    const ws = new WebSocket("ws://" + window.location.host + "/ws/marker-toggle/");
+    const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+    const ws = new WebSocket(`${wsProtocol}://${window.location.host}/ws/marker-toggle/`);
 
     function limparMapa() {
         allRouteLayers.forEach(layer => mapa.removeLayer(layer));
