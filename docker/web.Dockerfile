@@ -1,21 +1,29 @@
 FROM python:3.11-slim
 
-ENV NODE_VERSION=18.19.1
+# Instala dependências mínimas
+RUN apt-get update && apt-get install -y curl gnupg
 
-# Instala curl, extrator e dependências mínimas
-RUN apt-get update && apt-get install -y curl xz-utils && \
-    curl -fsSL https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz | tar -xJ -C /usr/local --strip-components=1 && \
+# Copia o script de instalação local
+COPY ./setup_18.x /tmp/setup_node.sh
+
+# Executa o script para configurar o repositório do Node
+RUN bash /tmp/setup_node.sh && \
+    apt-get install -y nodejs && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
+# Instala dependências Python
 COPY requirements.txt ./
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
+# Copia o restante do código
 COPY . .
 
+# Instala dependências Node (Tailwind etc.)
 RUN npm install && npm run build:prod
 
+# Entrypoint para execução
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
