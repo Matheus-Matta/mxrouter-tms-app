@@ -22,8 +22,7 @@ services:
       - redis
     networks:
       - minha_rede
-    dns:
-      - 8.8.8.8 
+
   websocket:
     <<: *base
     build:
@@ -78,3 +77,6 @@ networks:
   minha_rede:
     driver: bridge 
     external: true
+
+dns:
+  - 8.8.8.8
