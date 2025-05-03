@@ -42,8 +42,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://127.0.0.1',
     'http://127.0.0.1:8580',
     'https://127.0.0.1:8580',
-    "http://0.0.0.0:8580",
-    "https://0.0.0.0:8580",
+    "http://10.0.0.4:8580",
+    "https://10.0.0.4:8580",
     "http://mxrouter.starseguro.com.br",
     "https://mxrouter.starseguro.com.br",
 ]
