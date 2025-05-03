@@ -1,24 +1,20 @@
 FROM python:3.11-slim
 
-# Atualiza pacotes e instala Node.js + npm direto do repositório padrão
 RUN apt-get update && \
-    apt-get install -y nodejs npm && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+    apt-get install -y curl build-essential git && \
+    curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean
 
-# Define diretório de trabalho
 WORKDIR /app
 
-# Instala dependências Python
 COPY requirements.txt ./
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copia o restante do código
 COPY . .
 
-# Instala dependências Node (ex: Tailwind)
 RUN npm install && npm run build:prod
 
-# Entrypoint do projeto
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 

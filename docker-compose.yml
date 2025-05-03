@@ -22,7 +22,8 @@ services:
       - redis
     networks:
       - minha_rede
-
+    dns:
+      - 8.8.8.8 
   websocket:
     <<: *base
     build:
