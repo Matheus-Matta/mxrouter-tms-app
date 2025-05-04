@@ -5,7 +5,7 @@ from simple_history.admin import SimpleHistoryAdmin
 from tmsapp.models import RouteArea, COLOR_HEX_MAP
 
 @admin.register(CompanyLocation)
-class CompanyLocationAdmin(admin.ModelAdmin):
+class CompanyLocationAdmin(SimpleHistoryAdmin):
     list_display = (
         "name", "type", "city", "state", "neighborhood", "number",
         "is_principal", "is_active"
@@ -18,6 +18,7 @@ class CompanyLocationAdmin(admin.ModelAdmin):
         "name", "type", "address", "number", "neighborhood", "city", "state",
         "zip_code", "country", "latitude", "longitude", "is_principal", "is_active"
     )
+
 
 
 
