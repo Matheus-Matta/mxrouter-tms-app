@@ -23,7 +23,7 @@ class CompanyLocationAdmin(admin.ModelAdmin):
 
 @admin.register(RouteArea)
 class RouteAreaAdmin(SimpleHistoryAdmin):
-    list_display = ("name", "color_display", "city_count", "neighborhood_count", "created_at")
+    list_display = ("name", "color_display", "city_count", "neighborhood_count", "created_at", "updated_at")
     search_fields = ("name", "cities", "neighborhoods")
     list_filter = ("color_name", "created_at")
     readonly_fields = ("created_at", "color_preview", "geojson")
