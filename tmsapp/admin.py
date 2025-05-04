@@ -1,11 +1,11 @@
 from django.contrib import admin
-from .models.CompanyLocation import CompanyLocation
-from django.contrib import admin
+from django.utils.html import format_html
 from simple_history.admin import SimpleHistoryAdmin
 from tmsapp.models import RouteArea, COLOR_HEX_MAP
+from .models.CompanyLocation import CompanyLocation
 
 @admin.register(CompanyLocation)
-class CompanyLocationAdmin(admin.ModelAdmin):
+class CompanyLocationAdmin(SimpleHistoryAdmin):
     list_display = (
         "name", "type", "city", "state", "neighborhood", "number",
         "is_principal", "is_active"
@@ -19,14 +19,13 @@ class CompanyLocationAdmin(admin.ModelAdmin):
         "zip_code", "country", "latitude", "longitude", "is_principal", "is_active"
     )
 
-
-
 @admin.register(RouteArea)
 class RouteAreaAdmin(SimpleHistoryAdmin):
     list_display = ("name", "color_display", "city_count", "neighborhood_count", "created_at")
     search_fields = ("name", "cities", "neighborhoods")
     list_filter = ("color_name", "created_at")
     readonly_fields = ("created_at", "color_preview", "geojson")
+    history_list_display = ["color_name", "created_at", "history_user"]
 
     fieldsets = (
         (None, {
@@ -53,10 +52,9 @@ class RouteAreaAdmin(SimpleHistoryAdmin):
     neighborhood_count.short_description = "Neighborhoods"
 
     def color_preview(self, obj):
-        hex_color = obj.color_hex()
+        hex_color = obj.cor_hex()  # ou obj.color_hex(), depende do nome do método
         return format_html(
             '<div style="width: 40px; height: 20px; background-color: {}; border: 1px solid #ccc;"></div>',
             hex_color
         )
     color_preview.short_description = "Preview"
-

@@ -3,12 +3,15 @@ from tmsapp.action import get_geojson_by_ors, read_file_to_dataframe
 from django.core.files.storage import default_storage
 from django.contrib.auth import get_user_model
 from channels.layers import get_channel_layer
+from django.contrib.auth.models import User
 from tmsapp.action import geocode_endereco
 from asgiref.sync import async_to_sync
+from auditlog.context import set_actor
 from collections import defaultdict
 from django.db import transaction
 from celery import shared_task
 from datetime import datetime
+
 import pandas as pd
 import random
 import time
@@ -47,6 +50,7 @@ def send_task_update(task_id, message, percent, composition_id=None):
 def create_routes_task(self, user_id, sp_router, temp_file_path):
     time.sleep(3)
     user = User.objects.get(id=user_id)
+    set_actor(user)
     galpao_coords = [-42.9455242, -22.7920595, 'Seu Galpão']
 
     task_id = self.request.id
