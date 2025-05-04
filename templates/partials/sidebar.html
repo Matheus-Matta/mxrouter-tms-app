@@ -13,10 +13,10 @@
                 <span class="tooltip">Home</span>
             </a>
 
-            <a data-tooltip="" data-tooltip-placement="right" href="{% url 'tmsapp:route' %}"
+            <a data-tooltip="" data-tooltip-placement="right" href="{% url 'tmsapp:scripting' %}"
                 class="btn btn-icon btn-icon-lg rounded-full size-10 border border-transparent text-gray-600
         hover:bg-light hover:text-primary hover:border-gray-300
-        {% if '/route/' in request.path %}[.active&]:bg-light [.active&]:text-primary [.active&]:border-gray-300 active{% endif %}">
+        {% if '/scripting/' in request.path %}[.active&]:bg-light [.active&]:text-primary [.active&]:border-gray-300 active{% endif %}">
                 <span class="menu-icon"><i class="ki-filled ki-geolocation"></i></span>
                 <span class="tooltip">Rotas</span>
             </a>

@@ -207,9 +207,9 @@ document.addEventListener("DOMContentLoaded", function () {
                         const btnText = isChecked ? 'Desmarcar' : 'Marcar';
 
                         return `
-                            <div class="text-sm text-gray-800 dark:text-gray-100 rounded-lg p-1 space-y-2">
+                            <div class="text-sm text-gray-800 rounded-lg p-1 space-y-2">
                                 <p class="flex justify-between items-center">
-                                    <span>${rt.name}</span>
+                                    <strong class="text-xs">${rt.name}</strong>
                                     <strong class="text-primary">Ordem #${p.position}</strong>
                                 </p>
                                 <div>
@@ -217,7 +217,7 @@ document.addEventListener("DOMContentLoaded", function () {
                                     <span class="text-blue-500 dark:text-blue-400 font-semibold">Cliente: ${p.client}</span>
                                 </div>
                                 <p>${p.address}</p>
-                                <div class="text-end">
+                                <div class="text-center">
                                     <button
                                         class="mark-check-btn ${btnColor} text-white px-4 py-1 rounded text-xs font-medium"
                                         data-marker-id="${p.id}">

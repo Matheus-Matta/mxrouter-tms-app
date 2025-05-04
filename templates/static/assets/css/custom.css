@@ -11,3 +11,6 @@
 .leaflet-popup-content-wrapper{
   background-color: var(--tw-card-background-color) !important;
 }
+.min-w-\[200px\] {
+  min-width: 200px;
+}

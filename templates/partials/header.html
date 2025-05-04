@@ -30,7 +30,7 @@
                          {% if '/home/' in request.path %}
                             <i class="ki-filled ki-home mr-2"></i>
                             Início
-                          {% elif '/tms/route/' in request.path  %}
+                          {% elif '/tms/scripting/' in request.path  %}
                           <i class="ki-filled ki-geolocation mr-2"></i>
                             Rotas
                           {% elif request.path == '/perfil/' %}
@@ -55,8 +55,8 @@
                                   <span class="menu-title">Início</span>
                                 </a>
                             </div>
-                            <div class="menu-item {% if '/route/' in request.path %}hidden{% endif %}">
-                                <a class="menu-link" href="{% url 'tmsapp:route' %}" tabindex="0">
+                            <div class="menu-item {% if '/scripting/' in request.path %}hidden{% endif %}">
+                                <a class="menu-link" href="{% url 'tmsapp:scripting' %}" tabindex="0">
                                     <span class="menu-icon">
                                         <i class="ki-filled ki-geolocation"></i>
                                     </span>

@@ -121,7 +121,7 @@ def create_routes_task(self, user_id, sp_router, temp_file_path):
             send_task_update(task_id, 'Criando composição...', 41)
 
             composition = RouteComposition.objects.create(
-                name=f"Composition {datetime.now().strftime('%d-%m-%Y %H:%M')}",
+                name=f"Composição {datetime.now().strftime('%d-%m-%Y %H:%M')}",
                 type=sp_router,
                 created_by=user
             )

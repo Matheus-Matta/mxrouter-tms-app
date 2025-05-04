@@ -13,9 +13,9 @@ urlpatterns = [
   
   # paginas de rotas
   path(
-        'route/',
+        'scripting/',
         login_required(lambda request: render(request, 'pages/router.html')),
-        name='route'
+        name='scripting'
   ),
   # pagina de loading rotas
   path(
