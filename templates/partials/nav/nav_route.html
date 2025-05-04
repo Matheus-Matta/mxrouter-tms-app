@@ -9,7 +9,7 @@
             <div class="grid items-stretch">
                 <div class="scrollable-x-auto flex items-stretch">
                     <div class="menu gap-5 lg:gap-7.5" data-menu="true">
-                        <div class="menu-item border-b-2 border-b-transparent menu-item-active:border-b-gray-900 menu-item-here:border-b-gray-900  {% if '/tms/scripting/' in request.path %}here{% endif %}"
+                        <div class="menu-item border-b-2 border-b-transparent menu-item-active:border-b-gray-900 menu-item-here:border-b-gray-900  {% if '/tms/app/scripting/' in request.path %}here{% endif %}"
                             data-menu-item-placement="bottom-start" data-menu-item-placement-rtl="bottom-end"
                             data-menu-item-toggle="dropdown" data-menu-item-trigger="click|lg:hover">
                             <div class="menu-link gap-1.5"
@@ -25,8 +25,8 @@
                                 </span>
                             </div>
                             <div class="menu-dropdown menu-default py-2 min-w-[200px]">
-                                <div class="menu-item {% if '/tms/scripting/' in request.path %}active{% endif %}">
-                                    <a class="menu-link" href="{% url 'tmsapp:scripting' %}" tabindex="0">
+                                <div class="menu-item {% if '/tms/app/scripting/create' in request.path %}active{% endif %}">
+                                    <a class="menu-link" href="{% url 'tmsapp:create_scripting' %}" tabindex="0">
                                         <span class="menu-title">
                                             Criar Composição
                                         </span>
@@ -34,7 +34,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="menu-item border-b-2 border-b-transparent menu-item-active:border-b-gray-900 menu-item-here:border-b-gray-900  {% if '/tms/route/' in request.path %}here{% endif %}"
+                        <div class="menu-item border-b-2 border-b-transparent menu-item-active:border-b-gray-900 menu-item-here:border-b-gray-900  {% if '/tms/app/route/' in request.path %}here{% endif %}"
                             data-menu-item-placement="bottom-start" data-menu-item-placement-rtl="bottom-end"
                             data-menu-item-toggle="dropdown" data-menu-item-trigger="click|lg:hover">
                             <div class="menu-link gap-1.5"
@@ -50,15 +50,15 @@
                                 </span>
                             </div>
                             <div class="menu-dropdown menu-default py-2 min-w-[200px]">
-                                <div class="menu-item {% if '/tms/route/view/' in request.path %}active{% endif %}">
-                                    <a class="menu-link" href="{% url 'tmsapp:route_view' %}" tabindex="0">
+                                <div class="menu-item {% if '/tms/app/route/view/' in request.path %}active{% endif %}">
+                                    <a class="menu-link" href="" tabindex="0">
                                         <span class="menu-title">
                                             Visualizar Rotas	
                                         </span>
                                     </a>
                                 </div>
-                                <div class="menu-item {% if '/tms/route/create' in request.path %}active{% endif %}">
-                                    <a class="menu-link" href="#" tabindex="0">
+                                <div class="menu-item {% if '/tms/app/route/create' in request.path %}active{% endif %}">
+                                    <a class="menu-link" href="{% url 'tmsapp:route_create' %}" tabindex="0">
                                         <span class="menu-title">
                                             Criar rotas
                                         </span>

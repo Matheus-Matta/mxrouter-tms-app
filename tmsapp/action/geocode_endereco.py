@@ -1,6 +1,7 @@
 import requests
+from decouple import config
 
-GOOGLE_API_KEY = "AIzaSyDwVpNvbjNsn5N3M2V3d5LGQOeeY4uO460"
+GOOGLE_API_KEY = config('GOOGLE_API_KEY', default='NÃO-POSSUI-API-KEY')
 
 def geocode_endereco(endereco):
     url = "https://maps.googleapis.com/maps/api/geocode/json"

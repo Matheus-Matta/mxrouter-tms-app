@@ -28,7 +28,7 @@ urlpatterns = [
     path('ors/', include('ors.urls')),
     path('auth/', include('authapp.urls')),
     path('home/', include('homeapp.urls')),
-    path('tms/', include('tmsapp.urls')),
+    path('tms/app/', include('tmsapp.urls')),
 ]
 
 if settings.DEBUG:
