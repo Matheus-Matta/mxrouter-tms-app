@@ -1,0 +1,147 @@
+{% extends "base.html" %} {% load static %}
+
+{% block title %}Criar Rotas{% endblock %}
+{% block css %}
+<style>
+    .leaflet-div-icon {
+      background: red !important;
+      border: 2px solid white !important;
+      border-radius: 50% !important;
+      width: 10px !important;
+      height: 10px !important;
+      box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'partials/nav/nav_route.html' %}
+<div class="flex grow rounded-b-xl bg-[--tw-content-bg] dark:bg-[--tw-content-bg-dark] border-x border-b border-gray-400 dark:border-gray-200 lg:mt-[--tw-navbar-height] mx-5 lg:ms-[--tw-sidebar-width] mb-5">
+    <div class="flex flex-col grow pt-7">
+        <main class="grow pb-7" role="content">
+            <div class="container-fluid">
+                <div class="grid gap-5 lg:gap-7.5">
+                    <div class="grid lg:grid-cols-4 gap-5 lg:gap-7.5 items-stretch">
+
+                        <!-- Input de busca -->
+                        <div class="col-span-1">
+                            <div class="card p-4">
+                                <label for="bairro" class="block mb-2 font-medium text-sm text-gray-700">Buscar Bairro</label>
+                                <input type="text" id="bairro" placeholder="Digite um bairro" class="input w-full mb-2" />
+                                <button onclick="buscarBairro()" class="btn btn-primary w-full mb-2">Buscar</button>
+                                <label for="bairros_select" class="block mb-2 font-medium text-sm text-gray-700">Bairros encontrados</label>
+                                <select id="bairros_select" class="input w-full" onchange="mostrarBairroSelecionado()">
+                                    <option value="">Selecione um bairro</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Mapa -->
+                        <div style="height: 500px;" class="lg:col-span-3">
+                            <div class="card h-full flex flex-col">
+                                <div class="card-body flex-1 flex flex-col place-content-center p-2">
+                                    <div class="w-full h-full rounded-xl z-0" id="map"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+<script>
+    let map, drawnItems, features = [];
+
+    document.addEventListener("DOMContentLoaded", function () {
+        map = L.map("map").setView([-22.8, -42.9], 10);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        const drawControl = new L.Control.Draw({
+            edit: { featureGroup: drawnItems },
+            draw: {
+                polygon: true,
+                polyline: false,
+                rectangle: false,
+                circle: false,
+                marker: false,
+                circlemarker: false,
+            },
+        });
+        map.addControl(drawControl);
+
+        map.on(L.Draw.Event.CREATED, function (event) {
+            const layer = event.layer;
+            drawnItems.addLayer(layer);
+            const geojson = layer.toGeoJSON();
+            console.log("GeoJSON desenhado:", JSON.stringify(geojson));
+        });
+    });
+
+    function buscarBairro() {
+        const bairro = document.getElementById("bairro").value;
+        if (!bairro) return;
+
+        fetch(`https://nominatim.openstreetmap.org/search?format=geojson&polygon_geojson=1&q=${encodeURIComponent(bairro)}`)
+            .then(response => response.json())
+            .then(data => {
+                const select = document.getElementById("bairros_select");
+                select.innerHTML = '<option value="">Selecione um bairro</option>';
+
+                features = data.features;
+                features.forEach((feature, index) => {
+                    const name = feature.properties.display_name;
+                    const option = document.createElement("option");
+                    option.value = index;
+                    option.text = name;
+                    select.appendChild(option);
+                });
+
+                if (features.length === 1) {
+                    select.selectedIndex = 1;
+                    mostrarBairroSelecionado(0);
+                }
+            })
+            .catch(err => {
+                console.error("Erro ao buscar bairro:", err);
+                alert("Erro ao buscar bairro.");
+            });
+    }
+
+    function mostrarBairroSelecionado(index = null) {
+        if (index === null) {
+            index = document.getElementById("bairros_select").value;
+        }
+
+        if (!features[index]) return;
+
+        drawnItems.clearLayers();
+
+        const feature = features[index];
+        console.log(feature)
+
+        if (feature.geometry.type.includes("Polygon")) {
+            const layer = L.geoJSON(feature, {
+                style: {
+                    color: "red",
+                    weight: 2,
+                    fillOpacity: 0.3
+                }
+            }).addTo(drawnItems);
+            map.fitBounds(layer.getBounds());
+        }
+
+        console.log("GeoJSON do bairro selecionado:", JSON.stringify(feature));
+    }
+</script>
+{% endblock %}
