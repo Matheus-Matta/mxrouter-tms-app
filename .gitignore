@@ -31,6 +31,11 @@ staticfiles/
 instance/
 .DS_Store
 
+# Django Migrations
+**/migrations/
+**/migrations/*.py
+!**/migrations/__init__.py
+
 # Local settings
 .env
 *.env
