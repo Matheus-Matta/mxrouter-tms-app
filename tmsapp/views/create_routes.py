@@ -25,9 +25,10 @@ def create_routes(request):
 
         try:
             temp_dir = os.path.join(settings.BASE_DIR, 'temp')
-            os.makedirs(temp_dir, exist_ok=True)
+            os.makedirs(temp_dir, exist_ok=True)  # Garante que a pasta exista
 
-            temp_filename = f"{uuid.uuid4()}_{file.name}"
+            ext = os.path.splitext(file.name)[1].lower()
+            temp_filename = f"{uuid.uuid4()}{ext}"
             temp_file_path = os.path.join(temp_dir, temp_filename)
 
             with open(temp_file_path, 'wb+') as destination:
