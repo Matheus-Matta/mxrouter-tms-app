@@ -58,7 +58,8 @@ module.exports = {
     { pattern: /^divide-[xy]-(\d+|gray-\d+)$/ },
     { pattern: /^(grid-cols|col-span|row-span|gap|gap-x|gap-y)-[0-9]+$/ },
     { pattern: /^grid-rows-[0-9]+$/ },
-
+    'border-none',
+    'bg-transparent',
   ],
   darkMode: 'class',
   theme: {
@@ -258,6 +259,9 @@ module.exports = {
         green,
         yellow,
         ...otherColors,
+        transparent: 'transparent',
+        current: 'currentColor',
+        inherit: 'inherit',
         gray: {
           100: 'var(--tw-gray-100)',
           200: 'var(--tw-gray-200)',

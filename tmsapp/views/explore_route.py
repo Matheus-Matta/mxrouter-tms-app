@@ -1,9 +1,11 @@
-from django.shortcuts import render, get_object_or_404
 from tmsapp.models import RouteComposition, RouteDelivery, CompanyLocation  # Sua model atualizada
-import json
+from django.shortcuts import render, get_object_or_404, redirect
+from django.contrib.auth.decorators import login_required
+from celery.result import AsyncResult
 from django.contrib import messages
+import json
 
-
+@login_required
 def explore_route(request, composition_id):
     # Busca a composição de rotas pelo ID ou retorna 404
     composition = get_object_or_404(RouteComposition, id=composition_id)
@@ -65,3 +67,13 @@ def explore_route(request, composition_id):
 
     return render(request, 'pages/router_explore.html', context)
 
+
+@login_required
+def route_loading_view(request, task_id):
+    result = AsyncResult(str(task_id))
+
+    if result.state in ['SUCCESS', 'FAILURE']:
+        messages.warning(request, "Essa tarefa já foi finalizada ou não existe mais.")
+        return redirect(request.META.get('HTTP_REFERER', '/'))
+
+    return render(request, 'partials/loading/route_loading.html', {'task_id': task_id})
