@@ -51,7 +51,7 @@ services:
       - 8.8.8.8
 
   redis:
-    image: redis:7-alpine
+    image: redis:latest
     container_name: redis_mxrouter
     ports:
       - "6481:6379"
