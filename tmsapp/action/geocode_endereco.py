@@ -57,7 +57,7 @@ def geocode_endereco(endereco, numero=None, postal_code=None, bairro=None, cidad
         components.append("country:br")
 
     params = {
-        "address": f"{endereco}, {numero}, {bairro}",
+        "address": f"{endereco}, {numero if int(numero) > 0 else '1'}, {bairro}",
         "key": GOOGLE_API_KEY
     }
 
@@ -106,7 +106,7 @@ def geocode_endereco(endereco, numero=None, postal_code=None, bairro=None, cidad
 
     # Terceira tentativa: autocomplete
     params_auto = {
-        "address": f"{endereco}, {numero}, {bairro}, {cidade}, {postal_code}, {estado}, Brasil",
+        "address": f"{endereco}, {numero if int(numero) > 0 else '1'}, {bairro}, {cidade}, {postal_code}, {estado}, Brasil",
         "key": GOOGLE_API_KEY
     }
 
@@ -127,3 +127,5 @@ def geocode_endereco(endereco, numero=None, postal_code=None, bairro=None, cidad
 
     return None, None
 
+
+print(geocode_endereco('RUA NOVE' , '0', '24000000', 'PARQUE AURORA', 'ITABORAI', 'RJ'))
