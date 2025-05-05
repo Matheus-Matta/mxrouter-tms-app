@@ -12,3 +12,4 @@ def get_company_locations_api(request):
             "longitude": float(location.longitude) if location.longitude else None,
         })
     return JsonResponse(data, safe=False)
+

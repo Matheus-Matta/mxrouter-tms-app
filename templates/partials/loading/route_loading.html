@@ -67,7 +67,7 @@
                     
                         <!-- Barra de Progresso Bonita -->
                         <div class="w-full max-w-md">
-                            <div class="bg-gray-100 dark:bg-gray-900 rounded-full h-6 overflow-hidden shadow-inner shadow-dark-inner">
+                            <div class="bg-gray-100 rounded-full h-6 overflow-hidden shadow-inner shadow-dark-inner">
                                 <div style="width: 3%;" id="progress-bar-fill" class="bg-primary h-full text-white text-center text-2xs font-bold leading-6 rounded-full transition-all duration-700 ease-in-out">
                                     3%
                                 </div>
@@ -87,38 +87,50 @@
 
 {% block script %}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const taskId = "{{ task_id }}";
         const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-        const socket = new WebSocket(`${wsProtocol}://${window.location.host}/ws/tasks/${taskId}/`);
+        const wsUrl = `${wsProtocol}://${window.location.host}/ws/tasks/${taskId}/`;
 
-        socket.onopen = function() {
-            console.log('✅ WebSocket conectado.');
-        };
+        let socket;
+        let reconnectAttempts = 0;
 
-        socket.onmessage = function(e) {
-            const data = JSON.parse(e.data);
-            console.log('📩 Progresso recebido:', data);
+        function connectWebSocket() {
+            socket = new WebSocket(wsUrl);
 
-            document.querySelector('#status-message').innerText = data.progress;
-            document.querySelector('#progress-bar-fill').style.width = `${data.percent}%`;
-            document.querySelector('#progress-bar-fill').innerText = `${data.percent}%`;
+            socket.onopen = function () {
+                console.log('✅ WebSocket conectado.');
+                reconnectAttempts = 0;
+            };
 
-            if (parseInt(data.percent) === 100 && data.composition_id) {
-                console.log('✅ Task finalizada, redirecionando...');
-                setTimeout(function() {
-                    window.location.href = `/tms/route/explore/${data.composition_id}/`;
-                }, 1000);
-            }
-        };
+            socket.onmessage = function (e) {
+                const data = JSON.parse(e.data);
+                console.log('📩 Progresso recebido:', data);
 
-        socket.onerror = function(e) {
-            console.error('❌ Erro no WebSocket:', e);
-        };
+                document.querySelector('#status-message').innerText = data.progress;
+                document.querySelector('#progress-bar-fill').style.width = `${data.percent}%`;
+                document.querySelector('#progress-bar-fill').innerText = `${data.percent}%`;
 
-        socket.onclose = function(e) {
-            console.warn('⚠️ WebSocket desconectado.', e);
-        };
-    })
+                if (parseInt(data.percent) === 100 && data.composition_id) {
+                    console.log('✅ Task finalizada, redirecionando...');
+                    setTimeout(function () {
+                        window.location.href = `/tms/app/scripting/explore/${data.composition_id}/`;
+                    }, 1000);
+                }
+            };
+
+            socket.onerror = function (e) {
+                console.error('❌ Erro no WebSocket:', e);
+                socket.close(); // força o fechamento para reconectar
+            };
+
+            socket.onclose = function (e) {
+                console.warn('⚠️ WebSocket desconectado. Tentando reconectar...');
+                setTimeout(connectWebSocket, 2000);
+            };
+        }
+
+        connectWebSocket();
+    });
 </script>
 {% endblock %}

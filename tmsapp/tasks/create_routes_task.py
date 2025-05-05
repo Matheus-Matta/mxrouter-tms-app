@@ -3,12 +3,15 @@ from tmsapp.action import get_geojson_by_ors, read_file_to_dataframe
 from django.core.files.storage import default_storage
 from django.contrib.auth import get_user_model
 from channels.layers import get_channel_layer
+from django.contrib.auth.models import User
 from tmsapp.action import geocode_endereco
 from asgiref.sync import async_to_sync
+from auditlog.context import set_actor
 from collections import defaultdict
 from django.db import transaction
 from celery import shared_task
 from datetime import datetime
+
 import pandas as pd
 import random
 import time
@@ -24,6 +27,15 @@ def sanitize(value):
     if pd.isna(value) or str(value).strip().lower() == 'nan':
         return ''
     return str(value).strip()
+
+def montar_endereco(row):
+    """
+    Recebe uma linha do DataFrame e monta um endereço limpo e preciso.
+    """
+
+
+    return endereco_formatado, postal_code, city, state
+
 
 def send_task_update(task_id, message, percent, composition_id=None):
     """Envia atualização para WebSocket."""
@@ -47,6 +59,7 @@ def send_task_update(task_id, message, percent, composition_id=None):
 def create_routes_task(self, user_id, sp_router, temp_file_path):
     time.sleep(3)
     user = User.objects.get(id=user_id)
+    set_actor(user)
     galpao_coords = [-42.9455242, -22.7920595, 'Seu Galpão']
 
     task_id = self.request.id
@@ -72,25 +85,17 @@ def create_routes_task(self, user_id, sp_router, temp_file_path):
 
                 customer_name = sanitize(row.get('nomecliente'))
                 street = sanitize(row.get('ruaentrega'))
-                number = sanitize(row.get('numeroentrega'))
                 neighborhood = sanitize(row.get('bairroentrega'))
                 city = sanitize(row.get('cidadeentrega')).split('-')[0].strip()
                 address = sanitize(row.get('enderecoentrega'))
-                postal_code = sanitize(row.get('cepentrega')) 
-                state = 'Rio de janeiro'  # fixo, pode manter assim
+                state = 'RJ'
+                number_raw = sanitize(row.get('numeroentrega'))
+                postal_code_raw = sanitize(row.get('cepentrega'))
 
-                endereco_formatado = [
-                    address,
-                    number,
-                    neighborhood,
-                    city,
-                    state,
-                    postal_code,
-                    "Brasil"
-                ]
+                number = str(int(float(number_raw))) if number_raw else ''
+                postal_code = str(int(float(postal_code_raw))) if postal_code_raw else ''
 
-                endereco_str = ', '.join(filter(None, endereco_formatado))
-                latitude, longitude = geocode_endereco(endereco_str)
+                latitude, longitude = geocode_endereco(address, number, postal_code, neighborhood, city, state)
 
                 deliveries_objects.append(
                     Delivery(
@@ -98,7 +103,7 @@ def create_routes_task(self, user_id, sp_router, temp_file_path):
                         order_number=str(int(float(order_number))),
                         route_name=sanitize(row.get('nomerota')),
                         street=street,
-                        number=str(int(float(number))),
+                        number=number,
                         neighborhood=neighborhood,
                         city=city,
                         state=state,
@@ -107,7 +112,7 @@ def create_routes_task(self, user_id, sp_router, temp_file_path):
                         address=address,
                         cpf=sanitize(row.get('doctocliente')),
                         reference=sanitize(row.get('pontoreferenciaentrega')),
-                        postal_code=str(int(float(postal_code))),
+                        postal_code=postal_code,
                         latitude=latitude,
                         longitude=longitude,
                         created_by=user
@@ -246,6 +251,8 @@ def create_routes_task(self, user_id, sp_router, temp_file_path):
         return {'status': 'Concluído', 'composition_id': composition.id}
 
     except Exception as e:
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
         send_task_update(task_id, f"❌ Erro: {str(e)}", 0)
         raise e
 
