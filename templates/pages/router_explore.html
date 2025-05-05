@@ -81,25 +81,25 @@
                                     </h3>
                                     <div class="space-y-3">
                                         {% for stop in route.stops %}
-                                          {% if not stop.order_number == "SAIDA" %}
-                                          <div class="pedido-card transition hover:bg-gray-200 border border-gray-300 shadow-sm rounded-lg p-3 cursor-pointer hover:shadow-md"
-                                               data-route="{{ route.name }}" 
-                                               data-marker-id="{{ stop.id }}">
+                                        {% if not stop.order_number == "SAIDA" %}
+                                        <div class="pedido-card transition hover:bg-gray-200 border border-gray-300 shadow-sm rounded-lg p-3 cursor-pointer hover:shadow-md"
+                                            data-route="{{ route.name }}" data-marker-id="{{ stop.id }}">
                                             <div class="flex justify-between items-center">
-                                              <div>
-                                                <strong class="text-xs inline-block text-gray-500">Pedido: </strong>
-                                                <p class="text-sm inline-block font-semibold text-yellow-600">{{ stop.order_number }}</p>
-                                              </div>    
-                                              <span class="text-xs text-primary">#{{ stop.position }}</span>
+                                                <div>
+                                                    <strong class="text-xs inline-block text-gray-500">Pedido: </strong>
+                                                    <p class="text-sm inline-block font-semibold text-yellow-600">{{
+                                                        stop.order_number }}</p>
+                                                </div>
+                                                <span class="text-xs text-primary">#{{ stop.position }}</span>
                                             </div>
                                             <div class="text-xs text-gray-700 mt-1">
-                                              <strong>{{ stop.client }}</strong><br>
-                                              <span class="text-gray-500">{{ stop.address }}</span>
+                                                <strong>{{ stop.client }}</strong><br>
+                                                <span class="text-gray-500">{{ stop.address }}</span>
                                             </div>
-                                          </div>
-                                          {% endif %}
+                                        </div>
+                                        {% endif %}
                                         {% endfor %}
-                                      </div>
+                                    </div>
                                     {% endfor %}
                                 </div>
                             </div>
@@ -118,15 +118,16 @@
 
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-        const LIcon = L.Icon.Default;
-        LIcon.mergeOptions({
-            iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
-            iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
-            shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
-        });
 
-        const rotas = {{ routes_data| safe}};
+    document.addEventListener("DOMContentLoaded", function () { 
+    const LIcon = L.Icon.Default;
+    LIcon.mergeOptions({
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon-2x.png',
+        iconUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.3/dist/images/marker-shadow.png',
+    });
+
+    const rotas = {{ routes_data| safe }};
     const mapa = L.map('map').setView([-22.85, -43.0], 11);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}{r}.png', {
@@ -154,8 +155,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const routeSelect = document.getElementById("routeSelect");
     const allRouteLayers = [];
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
-    const ws = new WebSocket(`${wsProtocol}://${window.location.host}/ws/marker-toggle/`);
+
+    let ws = null;
+    
+    function connectWebSocket() {
+        const wsProtocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const wsUrl = `${wsProtocol}://${window.location.host}/ws/marker-toggle/`;
+
+        ws = new WebSocket(wsUrl);
+
+        ws.onopen = function () {
+            console.log('✅ WebSocket conectado.');
+        };
+
+        ws.onmessage = function (event) {
+            console.log("📩 Resposta do WebSocket:", event.data);
+        };
+
+        ws.onerror = function (e) {
+            console.error("❌ Erro no WebSocket:", e);
+        };
+
+        ws.onclose = function (e) {
+            console.warn("⚠️ WebSocket desconectado. Tentando reconectar em 3s...");
+            setTimeout(connectWebSocket, 3000); // reconecta após 3s
+        };
+    }
+
+    connectWebSocket();
+
 
     function limparMapa() {
         allRouteLayers.forEach(layer => mapa.removeLayer(layer));
@@ -234,26 +262,37 @@ document.addEventListener("DOMContentLoaded", function () {
                         if (btn) {
                             btn.addEventListener("click", function () {
                                 const isChecked = !marker._customData.is_check;
-                                marker._customData.is_check = isChecked;
 
-                                // Atualiza ícone e estilo
-                                const newIcon = L.AwesomeMarkers.icon({
-                                    icon: isChecked ? 'check' : ' ',
-                                    markerColor: corLinha.name,
-                                    prefix: 'fa',
-                                    html: isChecked ? '' : `<span class='text-white text-sm'>${p.position}</span>`,
-                                });
-                                marker.setIcon(newIcon);
-                                marker.getElement()?.classList.toggle("marker-checked", isChecked);
+                                if (ws.readyState === WebSocket.OPEN) {
+                                    const payload = {
+                                        delivery_id: p.id,
+                                        is_check: isChecked
+                                    };
 
-                                // Envia via WS
-                                ws.send(JSON.stringify({
-                                    delivery_id: p.id,
-                                    is_check: isChecked
-                                }));
+                                    try {
+                                        ws.send(JSON.stringify(payload));
 
-                                // Fecha para forçar reabrir com conteúdo atualizado
-                                marker.closePopup();
+                                        // Só atualiza visual após envio
+                                        marker._customData.is_check = isChecked;
+
+                                        const newIcon = L.AwesomeMarkers.icon({
+                                            icon: isChecked ? 'check' : ' ',
+                                            markerColor: corLinha.name,
+                                            prefix: 'fa',
+                                            html: isChecked ? '' : `<span class='text-white text-sm'>${p.position}</span>`,
+                                        });
+                                        marker.setIcon(newIcon);
+                                        marker.getElement()?.classList.toggle("marker-checked", isChecked);
+
+                                        marker.closePopup();
+                                    } catch (error) {
+                                        alert("Erro ao salvar marcador.", error);
+                                    }
+
+                                } else {
+                                    console.warn("❌ WebSocket desconectado. Clique ignorado.");
+                                    alert("Conexão perdida. Tentando reconectar...");
+                                }
                             });
                         }
                     });
@@ -265,23 +304,23 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-        routeSelect.addEventListener("change", function () {
-            carregarRotas(this.value);
-            document.querySelectorAll(".pedido-card").forEach(card => {
-                card.style.display = (this.value === "all" || card.dataset.route === this.value) ? "block" : "none";
-            });
-        });
+    routeSelect.addEventListener("change", function () {
+        carregarRotas(this.value);
         document.querySelectorAll(".pedido-card").forEach(card => {
-            card.addEventListener("click", () => {
-                const markerId = card.getAttribute("data-marker-id");
-                const marker = allRouteLayers.find(m => m._customData?.id == markerId);
-                if (marker) {
-                    mapa.setView(marker._customData.latlng, 15, { animate: true });
-                    marker.openPopup();
-                }
-            }); 
+            card.style.display = (this.value === "all" || card.dataset.route === this.value) ? "block" : "none";
         });
-        carregarRotas("all");
+    });
+    document.querySelectorAll(".pedido-card").forEach(card => {
+        card.addEventListener("click", () => {
+            const markerId = card.getAttribute("data-marker-id");
+            const marker = allRouteLayers.find(m => m._customData?.id == markerId);
+            if (marker) {
+                mapa.setView(marker._customData.latlng, 15, { animate: true });
+                marker.openPopup();
+            }
+        });
+    });
+    carregarRotas("all");
 });
 
 </script>
