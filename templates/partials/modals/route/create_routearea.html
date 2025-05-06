@@ -1,0 +1,63 @@
+<!-- Modal -->
+<div id="modalCriarRota" class="fixed inset-0 z-50 bg-black bg-opacity-50 hidden flex items-center justify-center">
+    <div class="bg-gray-100 p-5 rounded-lg w-full max-w-md shadow-xl">
+        <div class="flex justify-between items-center border-b pb-2 mb-4">
+            <h2 class="text-lg font-semibold">Criar Nova Rota</h2>
+            <div onclick="document.getElementById('modalCriarRota').classList.add('hidden')"
+                class="text-gray-500 hover:text-gray-800 text-xl cursor-pointer">&times;</div>
+        </div>
+
+        <form id="formCriarRota" action="{% url 'tmsapp:create_routearea' %}" method="post">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1" for="nomeRotaCriar">Nome da Rota</label>
+                <input type="text" id="nomeRotaCriar" name="nomeRota"
+                    class="input w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm"
+                    placeholder="Ex: Rota São Gonçalo" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1" for="statusRotaCriar">Status</label>
+                <select id="statusRotaCriar" name="statusRota"
+                    class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm" required>
+                    <option value="active">Ativo</option>
+                    <option value="disabled">Desabilitado</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium mb-1" for="corRota">Cor da Rota</label>
+                <select id="corRota" name="corRota"
+                    class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm" required>
+                    <option value="" disabled selected>Selecione uma cor</option>
+                    <option value="orange">Laranja</option>
+                    <option value="green">Verde</option>
+                    <option value="blue">Azul</option>
+                    <option value="purple">Roxo</option>
+                    <option value="darkred">Vermelho Escuro</option>
+                    <option value="darkgreen">Verde Escuro</option>
+                    <option value="darkblue">Azul Escuro</option>
+                    <option value="cadetblue">Azul Cadete</option>
+                    <option value="lightred">Vermelho Claro</option>
+                    <option value="beige">Bege</option>
+                    <option value="lightgreen">Verde Claro</option>
+                    <option value="lightblue">Azul Claro</option>
+                    <option value="darkpurple">Roxo Escuro</option>
+                    <option value="pink">Rosa</option>
+                </select>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-5">
+                <div type="button"
+                    onclick="document.getElementById('modalCriarRota').classList.add('hidden')"
+                    class="px-4 py-2 text-sm bg-red-500 text-white rounded cursor-pointer">
+                    Fechar
+                </div>
+                <button type="submit"
+                    class="px-4 py-2 text-sm bg-green-600 text-white rounded">
+                    Salvar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

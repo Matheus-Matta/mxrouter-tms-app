@@ -128,4 +128,3 @@ def geocode_endereco(endereco, numero=None, postal_code=None, bairro=None, cidad
     return None, None
 
 
-print(geocode_endereco('ROD ERNANI DO AMARAL PEIXOTO KM 15 LJ3', '0', '24942375', 'INOA', 'MARICA', 'RJ'))

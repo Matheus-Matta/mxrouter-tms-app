@@ -11,6 +11,41 @@
 .leaflet-popup-content-wrapper{
   background-color: var(--tw-card-background-color) !important;
 }
+
 .min-w-\[200px\] {
   min-width: 200px;
+}
+
+@layer utilities {
+  @keyframes fade-down {
+    from {
+      opacity: 0;
+      bottom: 3%;
+    }
+    to {
+      opacity: 1;
+      bottom: 0;
+    }
+  }
+
+  .animate-fade {
+    animation: fade-down 0.5s ease-out both;
+  }
+}
+
+.btn-dark[disabled], .btn-dark.disabled {
+  opacity: 1;
+  color: var(--tw-gray-500);
+  border-color: var(--tw-gray-200);
+  background-color: #dddddd;
+  cursor: default;
+  box-shadow: none;
+}
+.dark .btn-dark[disabled], .dark .btn-dark.disabled {
+  opacity: 1;
+  color: var(--tw-gray-400);
+  border-color: var(--tw-gray-200);
+  background-color: var(--tw-gray-100);
+  cursor: default;
+  box-shadow: none;
 }

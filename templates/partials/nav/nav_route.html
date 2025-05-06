@@ -58,11 +58,13 @@
                                     </a>
                                 </div>
                                 <div class="menu-item {% if '/tms/app/route/create' in request.path %}active{% endif %}">
-                                    <a class="menu-link" href="{% url 'tmsapp:route_create' %}" tabindex="0">
+                                    <button type="button"
+                                        onclick="document.getElementById('modalCriarRota').classList.remove('hidden')"
+                                        class="menu-link w-full text-left">
                                         <span class="menu-title">
                                             Criar rotas
                                         </span>
-                                    </a>
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -74,3 +76,5 @@
     </div>
 </div>
 <!-- End of Navbar -->
+
+{% include 'partials/modals/route/create_routearea.html' %}

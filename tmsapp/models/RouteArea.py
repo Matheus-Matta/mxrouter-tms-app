@@ -40,15 +40,28 @@ COLOR_HEX_MAP = {
     "pink": "#f78fb3",
     "gray": "#808080",
 }
+STATUS_CHOICES = [
+    ("active", "Ativo"),
+    ("disabled", "Desabilitado"),
+]
 
 class RouteArea(models.Model):
-    name = models.CharField(max_length=100, unique=True)
+    name = models.CharField(max_length=100)
 
     geojson = models.TextField(blank=True, null=True)
-    neighborhoods = models.JSONField(blank=True, default=list)
-    cities = models.JSONField(blank=True, default=list)
-    cep_start = models.JSONField(blank=True, default=list)
-    cep_end = models.JSONField(blank=True, default=list)
+    neighborhoods = models.JSONField(blank=True, null=True, default=list)
+    cities = models.JSONField(blank=True, null=True, default=list)
+    cep_start = models.JSONField(blank=True, null=True, default=list)
+    cep_end = models.JSONField(blank=True, null=True, default=list)
+    areatotal = models.FloatField(null=True, blank=True)
+    kmtotal = models.FloatField(null=True, blank=True)
+
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default="active",
+        help_text="Status da rota"
+    )
 
     color_name = models.CharField(
         max_length=20,

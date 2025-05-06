@@ -3,7 +3,8 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 from django.views.generic import TemplateView
-from .views import create_routes, get_company_locations_api, explore_route, route_compositions_data, CreateRoutesView, route_loading_view
+from .views import *
+
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 
@@ -36,9 +37,10 @@ urlpatterns = [
  
 
   ####### ROUTE PATH 
-  path('route/create/', CreateRoutesView.as_view(), name='route_create'),
-
-
-
+  path('route/create/',  create_routearea, name='create_routearea'),
+  path('route/edit/<int:route_id>/', edit_routearea, name='edit_routearea'),
+  path('route/delete/<int:route_id>/', delete_routearea, name='delete_routearea'),
+  path('routes/', route_view, name='route'),
+  path('route/<int:route_id>/', route_view, name='route_view'),
 
 ]

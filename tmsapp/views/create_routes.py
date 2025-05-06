@@ -15,13 +15,13 @@ def create_routes(request):
 
         if not file:
             messages.error(request, "Nenhum arquivo enviado.")
-            return redirect('tmsapp:route')
+            return redirect('tmsapp:create_scripting')
  
         ext = os.path.splitext(file.name)[1].lower()
         ALLOWED_EXTENSIONS = ['.xlsx', '.xls', '.csv']
         if ext not in ALLOWED_EXTENSIONS:
             messages.error(request, "Formato de arquivo não suportado. Envie um arquivo .xlsx, .xls ou .csv.")
-            return redirect('tmsapp:route')
+            return redirect('tmsapp:create_scripting')
 
         try:
             temp_dir = os.path.join(settings.BASE_DIR, 'temp')
@@ -40,7 +40,7 @@ def create_routes(request):
 
         except Exception as e:
             messages.error(request, f"Erro ao iniciar o processo: {str(e)}")
-            return redirect('tmsapp:route')
+            return redirect('tmsapp:create_scripting')
 
-    return redirect('tmsapp:route')
+    return redirect('tmsapp:create_scripting')
 

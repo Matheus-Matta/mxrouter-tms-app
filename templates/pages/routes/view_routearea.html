@@ -1,0 +1,267 @@
+{% extends "base.html" %} {% load static %}
+
+{% block title %}Criar Rotas{% endblock %}
+{% block css %}
+<style>
+    .leaflet-div-icon {
+        background: red !important;
+        border: 2px solid white !important;
+        border-radius: 50% !important;
+        width: 10px !important;
+        height: 10px !important;
+        box-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% include 'partials/nav/nav_route.html' %}
+<div
+    class="flex grow rounded-b-xl bg-[--tw-content-bg] dark:bg-[--tw-content-bg-dark] border-x border-b border-gray-400 dark:border-gray-200 lg:mt-[--tw-navbar-height] mx-5 lg:ms-[--tw-sidebar-width] mb-5">
+    <div class="flex flex-col grow pt-3 lg:scrollable-y lg:[scrollbar-width:auto] lg:light:[--tw-scrollbar-thumb-color:var(--tw-content-scrollbar-color)] lg:[&_.container-fluid]:pe-4"
+        id="scrollable_content">
+        <main class="grow pb-7" role="content">
+            <div class="container-fluid ">
+                <div class="grid gap-5 lg:gap-7.5">
+                    <div class="grid h-full grid-cols-4 grid-rows-5 gap-5 lg:gap-7.5 items-stretch">
+
+                        <!-- Input de busca -->
+                        <div class="col-span-1 row-span-5">
+                            <div class="card h-full flex flex-col justify-between p-4">
+                                <div class="h-full">
+                                    <form id="bairroForm" action="">
+                                        <div data-kt-dropdown="true" data-kt-dropdown-trigger="click"
+                                            class="relative w-full">
+                                            <div class="flex align-center w-full relative">
+                                                <i style="margin-top: 6px;"
+                                                    class="ki-filled ml-2 ki-magnifier absolute text-gray-700 text-xl">
+                                                </i>
+                                                <input
+                                                    class="input pl-8 bg-transparent shadow-none w-full border-gray-200"
+                                                    name="query" type="text" value="" type="text"
+                                                    placeholder="Pesquise a região aqui." id="bairroInput"
+                                                    autocomplete="off">
+                                                <div id="loader"
+                                                    class="absolute right-0 mr-3 pb-1 top-1/2 transform -translate-y-1/2 hidden"
+                                                    role="status">
+                                                    <svg aria-hidden="true" role="status"
+                                                        class="inline w-4 h-4 text-gray-200 animate-spin dark:text-gray-600"
+                                                        viewBox="0 0 100 101" fill="none"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path
+                                                            d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                                                            fill="currentColor" />
+                                                        <path
+                                                            d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
+                                                            fill="#1C64F2" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <!-- Dropdown menu -->
+                                            <div id="dropdown"
+                                                class="kt-dropdown-menu absolute z-50 mt-1 w-full hidden bg-white border border-gray-200 rounded-md shadow-lg"
+                                                data-kt-dropdown-menu="true">
+                                                <!-- Sugestões são inseridas aqui via JS -->
+                                            </div>
+                                        </div>
+                                    </form>
+                                    <div style="height: 90%;" class="flex  flex-col justify-between">
+                                        <div class="flex flex-col gap-1 mt-2">
+                                            <button
+                                                class="px-3 py-1 text-sm text-white btn-dark rounded w-full transition disabled">
+                                                Cidades da Rota
+                                            </button>
+                                            <button
+                                                class="px-3 py-1 text-sm text-white btn-dark rounded w-full transition disabled">
+                                                Bairros Inclusos
+                                            </button>
+                                            <button
+                                                class="px-3 py-1 text-sm text-white btn-dark rounded w-full transition disabled">
+                                                Faixas de CEP
+                                            </button>
+                                            <button
+                                                class="px-3 py-1 text-sm text-white btn-dark rounded w-full transition disabled">
+                                                Resumo da Área
+                                            </button>
+                                            <button
+                                                class="px-3 py-1 text-sm text-white btn-dark rounded w-full transition disabled">
+                                                Exportar GeoJSON
+                                            </button>
+                                        </div>
+                                        <div class="">
+                                            <form action="{% url 'tmsapp:edit_routearea' rota.id %}" method="post" class="flex gap-2 align-center">
+                                                {% csrf_token %}
+                                                <input id="areaTotalInput" value="{{ rota.areatotal }}" name="areatotal" type="hidden">
+                                                <input id="distanciaTotalInput" value="{{ rota.kmtotal }}" name="kmtotal" type="hidden">
+                                                <input id="geojsonInput" value="{{ rota.geojson }}" name="geojson" type="hidden" data-other-routes="{{ outras }}">
+                                        
+                                                <!-- Botão Editar com ativador de modal -->
+                                                <div
+                                                    type="button"
+                                                    onclick="document.getElementById('modalEditarRota').classList.remove('hidden')"
+                                                    class="px-3 py-1 text-xs rounded text-center bg-blue-500 text-white w-full shadow-lg cursor-pointer">
+                                                    Editar
+                                                </div>
+                                        
+                                                <button type="submit"
+                                                    class="px-3 py-1 text-xs rounded bg-green-500 text-white w-full shadow-lg">
+                                                    Finalizar
+                                                </button>
+
+                                                <!-- Modal -->
+                                                <div id="modalEditarRota" class="fixed inset-0 z-50 bg-black bg-opacity-50 hidden flex items-center justify-center">
+                                                    <div class="bg-gray-100 p-5 rounded-lg w-full max-w-md shadow-xl">
+                                                        <div class="flex justify-between items-center border-b pb-2 mb-4">
+                                                            <h2 class="text-lg font-semibold">Editar Rota</h2>
+                                                            <div onclick="document.getElementById('modalEditarRota').classList.add('hidden')"
+                                                                class="text-gray-500 hover:text-gray-800 text-xl cursor-pointer">&times;</div>
+                                                        </div>
+                                                            <div class="mb-4">
+                                                                <label class="block text-sm font-medium mb-1" for="nomeRota">Nome da Rota</label>
+                                                                <input type="text" id="nomeRota" name="nomeRota"
+                                                                    class="input w-full bg-gray-100" value="{{ rota.name }}" placeholder="Ex: Rota São Gonçalo">
+                                                            </div>
+                                                
+                                                            <div class="mb-4">
+                                                                <label class="block text-sm font-medium mb-1" for="statusRotaInput">Status</label>
+                                                                <select id="statusRotaInput" name="statusRota"
+                                                                    class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm">
+                                                                    <option {% if rota.status == 'active' %} selected {% endif %} value="active" >Ativo</option>
+                                                                    <option {% if rota.status == 'disabled' %} selected {% endif %} value="disabled">Desabilitado</option>
+                                                                </select>
+                                                            </div>
+
+                                                            <div class="mb-4">
+                                                                <label class="block text-sm font-medium mb-1" for="corRota">Cor da Rota</label>
+                                                                <select id="corRotaEdit" data-color="{{ rota.color_name }}" name="corRota"
+                                                                class="w-full bg-gray-100 border border-gray-300 rounded px-3 py-2 text-sm" required>
+                                                                    <option value="" disabled {% if not rota.color_name %}selected{% endif %}>Selecione uma cor</option>
+                                                                    <option value="orange" {% if rota.color_name == "orange" %}selected{% endif %}>Laranja</option>
+                                                                    <option value="green" {% if rota.color_name == "green" %}selected{% endif %}>Verde</option>
+                                                                    <option value="blue" {% if rota.color_name == "blue" %}selected{% endif %}>Azul</option>
+                                                                    <option value="purple" {% if rota.color_name == "purple" %}selected{% endif %}>Roxo</option>
+                                                                    <option value="darkred" {% if rota.color_name == "darkred" %}selected{% endif %}>Vermelho Escuro</option>
+                                                                    <option value="darkgreen" {% if rota.color_name == "darkgreen" %}selected{% endif %}>Verde Escuro</option>
+                                                                    <option value="darkblue" {% if rota.color_name == "darkblue" %}selected{% endif %}>Azul Escuro</option>
+                                                                    <option value="cadetblue" {% if rota.color_name == "cadetblue" %}selected{% endif %}>Azul Cadete</option>
+                                                                    <option value="lightred" {% if rota.color_name == "lightred" %}selected{% endif %}>Vermelho Claro</option>
+                                                                    <option value="beige" {% if rota.color_name == "beige" %}selected{% endif %}>Bege</option>
+                                                                    <option value="lightgreen" {% if rota.color_name == "lightgreen" %}selected{% endif %}>Verde Claro</option>
+                                                                    <option value="lightblue" {% if rota.color_name == "lightblue" %}selected{% endif %}>Azul Claro</option>
+                                                                    <option value="darkpurple" {% if rota.color_name == "darkpurple" %}selected{% endif %}>Roxo Escuro</option>
+                                                                    <option value="pink" {% if rota.color_name == "pink" %}selected{% endif %}>Rosa</option>
+                                                                </select>
+                                                            
+                                                            </div>
+                                                            <div class="flex align-center justify-end gap-2 mt-5">
+                                                                <div type="button"
+                                                                    onclick="document.getElementById('modalEditarRota').classList.add('hidden')"
+                                                                    class="px-4 py-2 text-sm text-center bg-blue-500 text-white cursor-pointer rounded">
+                                                                    fechar
+                                                                </div>
+                                                                <div  style="margin-top: 1px;" onclick="document.getElementById('modalConfirmarExclusao').classList.remove('hidden')"
+                                                                    class="text-white mr-2 btn-sm rounded bg-red-500 text-xl cursor-pointer">
+                                                                    <i class="ki-filled ki-trash"></i>
+                                                                </div>
+                                                            </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-footer p-2">
+                                    <div class="mt-2 text-sm text-gray-700">
+                                        <div><span id="NomeRota"
+                                                class="text-info text-sm font-semibold">{{ rota.name }}</span></div>
+                                        <div><strong>Status:</strong> <span id="statusRota"
+                                                class="text-green-500 font-semibold">{{ rota.get_status_display }}</span></div>
+                                        <div><strong>Criado por:</strong> <span id="rotaCriadaPor">{{ rota.created_by }}</span></div>
+                                        <div><strong>Data de Criação:</strong> <span id="rotaCriadaEm">{{ rota.created_at|date:"d/m/Y H:i" }}
+                                                </span></div>
+                                        <div><strong>Última Atualização:</strong> <span id="rotaAtualizadaEm">{{ rota.update_at|date:"d/m/Y H:i" }}
+                                                </span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Mapa -->
+                        <div class="col-span-3 row-span-4 relative">
+                            <div class="card h-full flex flex-col">
+                                <div class="card-body flex-1 flex flex-col place-content-center p-2">
+                                    <div class="w-full h-full rounded-xl z-0" id="map"></div>
+                                </div>
+                                <div id="saveMap"
+                                    class="hidden animate-fade z-10 p-3 bg-gray-100 flex items-center justify-center gap-3 rounded-md text-gray-800 absolute left-1/2 bottom-0 mb-4 transform -translate-x-1/2">
+                                    <div class="flex justify-center">
+                                        <span class="text-xs">Você fez alterações que ainda não foram salvas.</span>
+                                    </div>
+                                    <button onclick="salvarGeoJSON()"
+                                        class="px-3 py-1.5 text-xs font-medium text-white bg-green-500 rounded-md">
+                                        Salvar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-span-2 row-span-1">
+                            <div class="card h-full flex flex-col p-4">
+                                <div class="grid grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-200">
+                                    <!-- Área Total -->
+
+                                    <div class="card p-4 rounded-lg shadow-md">
+                                        <div class="font-semibold">Área Total</div>
+                                        <div id="areaTotal" class="text-lg font-bold mt-1">
+                                            {% if rota.areatotal %}{{ rota.areatotal }} m²{% else %}0 m²{% endif %}
+                                        </div>
+                                    </div>
+
+                                    <!-- Distância Total -->
+                                    <div class="card p-4 rounded-lg shadow-md">
+                                        <div class="font-semibold">Distância Total</div>
+                                        <div id="distanciaTotal" class="text-lg font-bold mt-1">
+                                            {% if rota.kmtotal %}{{ rota.kmtotal }} km{% else %}0 km{% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+</div>
+
+<!-- Modal de Confirmação de Exclusão -->
+<div id="modalConfirmarExclusao" class="fixed inset-0 z-50 bg-opacity-50 hidden flex items-center justify-center">
+    <div class=" bg-gray-200 p-6 rounded-lg w-full max-w-md shadow-xl">
+        <h2 class="text-lg font-semibold mb-4 text-center text-red-600">Confirmar Exclusão</h2>
+        <p class="text-sm text-gray-700 text-center mb-6">
+            Tem certeza que deseja excluir a rota <strong>#{{ rota.id }}</strong> - "{{ rota.name }}"?
+        </p>
+        <form method="POST" action="{% url 'tmsapp:delete_routearea' route_id=rota.id %}" class="flex justify-end gap-3">
+            {% csrf_token %}
+            <button type="button"
+                onclick="document.getElementById('modalConfirmarExclusao').classList.add('hidden')"
+                class="px-4 py-2 text-sm bg-gray-300 hover:bg-gray-400 rounded">
+                Cancelar
+            </button>
+            <button type="submit"
+                class="px-4 py-2 text-sm bg-red-500 hover:bg-red-600 text-white rounded">
+                Excluir
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block script %}
+
+<script src="{% static 'assets/js/custom/pages/create_routearea/mapa.js' %}"></script>
+
+
+{% endblock %}
