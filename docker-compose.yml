@@ -15,8 +15,6 @@ services:
       - redis
     networks:
       - minha_rede
-    dns:
-      - 8.8.8.8
 
   websocket:
     build:
@@ -32,8 +30,6 @@ services:
       - redis
     networks:
       - minha_rede
-    dns:
-      - 8.8.8.8
 
   worker:
     build:
@@ -57,8 +53,7 @@ services:
       - redis:/data
     networks:
       - minha_rede
-    dns:
-      - 8.8.8.8
+
 
   nginx:
     image: nginx:stable
@@ -72,8 +67,6 @@ services:
       - websocket
     networks:
       - minha_rede
-    dns:
-      - 8.8.8.8
 
 volumes:
   redis:
