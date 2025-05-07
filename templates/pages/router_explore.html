@@ -236,7 +236,16 @@
                                     <strong class="text-primary">Ordem #${p.position}</strong>
                                 </p>
                                 <div>
-                                    <span class="text-yellow-500  dark:text-red-400">Pedido: ${p.order_number}</span><br>
+                                    <span class="text-yellow-500 dark:text-red-400">
+                                        Pedido: ${p.order_number}
+                                        <button
+                                            class="ml-2 pb-2 text-base text-gray-700 copy-btn"
+                                            data-copy-text="${p.order_number}"
+                                            title="Copiar pedido"
+                                        >
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </span><br>
                                     <span class="text-blue-500 dark:text-blue-400 font-semibold">Cliente: ${p.client}</span>
                                 </div>
                                 <p>${p.address}</p>
@@ -322,6 +331,19 @@
         });
     });
     carregarRotas("all");
+
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.copy-btn')) {
+            const btn = e.target.closest('.copy-btn');
+            const text = btn.getAttribute('data-copy-text');
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerHTML = '<i class="fas fa-check text-green-500"></i>';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-copy"></i>';
+                }, 1000);
+            });
+        }
+    });
 });
 
 </script>
