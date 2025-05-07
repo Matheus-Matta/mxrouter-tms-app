@@ -13,8 +13,6 @@ let outras_geojsons
 const corRota = document.querySelector("#corRotaEdit").getAttribute("data-color");
 document.addEventListener("DOMContentLoaded", () => {
 
-
-
     map = L.map("map").setView([-22.8, -42.9], 12);
 
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -78,25 +76,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Carrega o geojson inicial salvo no input, se houver
     const geojsonInput = document.getElementById("geojsonInput");
-    outras_geojsons = geojsonInput.getAttribute("data-other-routes");
+    outras_geojsons = JSON.parse(geojsonInput.getAttribute("data-other-routes"));
     adicionarOutrasRotas()
     if (geojsonInput && geojsonInput.value && geojsonInput.value !== "None") {
         try {
             const parsed = JSON.parse(geojsonInput.value);
-            console.log(parsed);
             // Verifica se é um GeoJSON válido com 'type'
             if (parsed.type && (parsed.type === "Feature" || parsed.type === "FeatureCollection")) {
                 routeGeoJSON = parsed;
-
+                console.log(routeGeoJSON, outras_geojsons)
                 L.geoJSON(routeGeoJSON, {
                     style: { color: corRota, weight: 2, fillOpacity: 0.50 }
                 }).eachLayer(layer => {
                     map.addLayer(layer);
                     registrarEventosPm(layer);
                 });
-                map.fitBounds(L.geoJSON(routeGeoJSON).getBounds(), {
-                    maxZoom: map.getZoom()
-                });
+                const bounds = L.geoJSON(routeGeoJSON).getBounds();
+                if (bounds.isValid()) {
+                    map.fitBounds(bounds, { maxZoom: map.getZoom() });
+                }
                 atualizarDadosGeoJSON(routeGeoJSON);
             } else {
                 console.error("❌ GeoJSON inválido: estrutura ausente ou incorreta.");
@@ -111,7 +109,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function registrarEventosPm(layer) {
     if (!layer || !layer.on) return;
-
     layer.on('pm:edit', mostrarBotaoSalvar);
     layer.on('pm:remove', mostrarBotaoSalvar);
 }
@@ -180,14 +177,12 @@ function mostrarBairroSelecionado(feature) {
 
 function salvarGeoJSON() {
     salvarEstadoAnterior();
+
     document.getElementById("saveMap").classList.add("hidden");
 
-    const layers = [];
-    map.eachLayer(layer => {
-        if (layer instanceof L.Polygon && typeof layer.toGeoJSON === "function") {
-            layers.push(layer);
-        }
-    });
+    const layers = Object.values(map._layers).filter(l =>
+        l instanceof L.Polygon && typeof l.toGeoJSON === "function"
+    );
 
     if (!layers.length) {
         routeGeoJSON = null;
@@ -196,27 +191,25 @@ function salvarGeoJSON() {
         return;
     }
 
-    let novoGeo;
-    try {
-        novoGeo = turf.cleanCoords(layers[0].toGeoJSON());
-        for (let i = 1; i < layers.length; i++) {
-            novoGeo = turf.union(novoGeo, turf.cleanCoords(layers[i].toGeoJSON()));
+    let novoGeo = layers[0].toGeoJSON();
+    for (let i = 1; i < layers.length; i++) {
+        try {
+            novoGeo = turf.union(novoGeo, layers[i].toGeoJSON());
+        } catch (e) {
+            console.error("Erro ao unir polígonos:", e);
+            return;
         }
-    } catch (e) {
-        console.error("Erro ao unir polígonos:", e);
-        return;
     }
-
     routeGeoJSON = novoGeo;
 
     if (outras_geojsons) {
         try {
-            const outras = JSON.parse(outras_geojsons);
-            outras.forEach((geo) => {
+            outras_geojsons.forEach((geo) => {
                 try {
-                    routeGeoJSON = turf.difference(routeGeoJSON, geo);
+                    const outro = geo.geojson?.type === "Feature" ? geo.geojson : { type: "Feature", geometry: geo.geojson };
+                    routeGeoJSON = turf.difference(routeGeoJSON, outro);
                 } catch (e) {
-                    console.warn("Erro ao subtrair rota existente:", e);
+                    console.warn("Erro ao subtrair rota:", e);
                 }
             });
         } catch (e) {
@@ -224,12 +217,7 @@ function salvarGeoJSON() {
         }
     }
 
-    // Remove todos os polígonos atuais antes de redesenhar o novo unificado
-    map.eachLayer(layer => {
-        if (layer instanceof L.Polygon && typeof layer.toGeoJSON === "function") {
-            map.removeLayer(layer);
-        }
-    });
+    layers.forEach(l => map.removeLayer(l));
 
     L.geoJSON(routeGeoJSON, {
         style: { color: corRota, weight: 2, fillOpacity: 0.15 }
@@ -237,35 +225,10 @@ function salvarGeoJSON() {
         map.addLayer(layer);
         registrarEventosPm(layer);
     });
-
-    adicionarOutrasRotas();
-    salveGeojsonInput(routeGeoJSON);
-    atualizarDadosGeoJSON(routeGeoJSON);
-}
-
-function removerSobreposicaoGeoJSON() {
-    const allLayers = drawnItems.toGeoJSON();
-
-    if (!allLayers?.features.length || !routeGeoJSON) return;
-
-    let resultado = routeGeoJSON;
-    allLayers.features.forEach((f) => {
-        try {
-            resultado = turf.difference(resultado, f);
-        } catch (e) {
-            console.error("Erro ao subtrair área:", e);
-        }
-    });
-
-    routeGeoJSON = resultado;
-    drawnItems.clearLayers();
-
-    if (routeGeoJSON) {
-        L.geoJSON(routeGeoJSON, {
-            style: { color: corRota, weight: 2, fillOpacity: 0.4 }
-        }).eachLayer((layer) => drawnItems.addLayer(layer));
-    }
-
+    
+    adicionarOutrasRotas()
+    salveGeojsonInput(routeGeoJSON)
+    atualizarDadosGeoJSON(routeGeoJSON)
 }
 
 // Eventos do campo de busca
@@ -343,11 +306,12 @@ function desfazerUltimaAlteracao() {
     }
 
     if (undoStack.length > 1) () => mostrarBotaoSalvar();
+    
     salveGeojsonInput(routeGeoJSON)
 }
 function salveGeojsonInput(geojson) {
     const geoinput = document.getElementById("geojsonInput");
-    if (routeGeoJSON) {
+    if (geojson) {
         geoinput.value = JSON.stringify(geojson);
     }
 }
@@ -383,10 +347,10 @@ function recalcularGeoJSON() {
 function adicionarOutrasRotas(){
     if (outras_geojsons) {
         try {
-            const otherRoutes = JSON.parse(outras_geojsons);
-            otherRoutes.forEach((geojson) => {
-                if (geojson && geojson.type) {
-                    L.geoJSON(geojson, {
+            outras_geojsons.forEach((geojson) => {
+                console.log(geojson)
+                if (geojson && geojson.geojson && geojson.geojson.type) {
+                    L.geoJSON(geojson.geojson, {
                         style: {
                             color: "gray",
                             weight: 1,

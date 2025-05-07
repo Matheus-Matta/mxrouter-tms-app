@@ -1,7 +1,8 @@
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.views.generic import TemplateView
+from django.contrib import messages
 from tmsapp.models import RouteArea
 import json
 
@@ -25,7 +26,12 @@ def create_routearea(request):
 
 @login_required
 def route_view(request, route_id):
-    rota = get_object_or_404(RouteArea, id=route_id)
+    try:
+        rota = RouteArea.objects.get(id=route_id)
+    except RouteArea.DoesNotExist:
+        messages.error(request, "Rota não encontrada ou pode ter sido removida.")
+        return redirect(request.META.get('HTTP_REFERER', 'tmsapp:route'))  # fallback
+
     outras_rotas = RouteArea.objects.exclude(id=rota.id).exclude(geojson__isnull=True).exclude(geojson="")
 
     outras = []
